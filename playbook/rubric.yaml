@@ -1,0 +1,340 @@
+# NDA triage playbook rubric
+#
+# Every position in this file came from an interview with the playbook owner
+# (an attorney). Nothing here was invented by the tool. Where an answer was
+# left blank or later corrected, a `notes` field says so.
+#
+# How to read a rule:
+#   patterns   - the fact patterns the rule sorts an NDA clause into. Each
+#                pattern has a color per posture (discloser / recipient / mutual).
+#   modifiers  - adjustments applied after the pattern color is chosen.
+#   fallbacks  - what the redline proposes when the clause flags YELLOW or RED.
+#                action "replace" proposes the text; action "strike" deletes
+#                the clause with no replacement. Fallback text is what the
+#                retrieval layer (Stage 3) embeds and indexes.
+
+version: 1
+
+postures:
+  discloser: We are mainly sharing our confidential information.
+  recipient: We are mainly receiving the other side's confidential information.
+  mutual: Both sides are sharing; the NDA should protect both.
+
+colors:
+  GREEN: Within playbook. The business may sign under standard delegation.
+  YELLOW: Off-playbook but negotiable. Counsel reviews; the fallback position usually resolves it.
+  RED: Hard line. Escalate to senior counsel or the GC, or refuse.
+
+# How rule colors combine into the verdict for the whole NDA.
+aggregation: worst_rule_wins   # any RED -> RED; else any YELLOW -> YELLOW; else GREEN
+
+# The user supplies --posture. The agent also reads the document's structure
+# and warns if the stated posture conflicts with it (e.g. "mutual" stated, but
+# only one party's information is protected). The warning does not change colors.
+posture_cross_check: true
+
+rules:
+
+  - id: mutuality
+    name: Mutual vs. one-way
+    description: Whose information the NDA protects, and whether both parties carry the same obligations.
+    patterns:
+      - id: fully_mutual
+        description: Both parties' information is protected and the obligations are identical.
+        colors: {discloser: GREEN, recipient: GREEN, mutual: GREEN}
+      - id: one_way_protects_us
+        description: One-way NDA that protects only our information.
+        colors: {discloser: GREEN, recipient: GREEN, mutual: GREEN}
+      - id: one_way_protects_them
+        description: One-way NDA that protects only the other party's information.
+        colors: {discloser: RED, recipient: YELLOW, mutual: RED}
+    notes: >
+      A fourth pattern (labeled mutual but asymmetric in substance) was left
+      without colors during the interview. It is handled by the posture
+      cross-check warning instead. Revisit after evals.
+    fallbacks:
+      - id: mutuality_mutual_obligations
+        applies_to: [one_way_protects_them]
+        postures: [discloser, recipient, mutual]
+        action: replace
+        text: >
+          Mutual Obligations. Each party may disclose Confidential Information
+          to the other in connection with the Purpose. "Disclosing Party" means
+          the party disclosing Confidential Information, and "Receiving Party"
+          means the party receiving it. Each party has the rights and
+          obligations of a Disclosing Party and a Receiving Party under this
+          Agreement, as applicable, and the definition of Confidential
+          Information, the exclusions from that definition, and the Receiving
+          Party's obligations apply identically to both parties.
+
+  - id: term
+    name: Term
+    description: How long the agreement and the disclosure period run (not how long obligations survive; see survival).
+    patterns:
+      - id: term_1yr_or_less
+        description: Term of 1 year or less.
+        colors: {discloser: YELLOW, recipient: GREEN, mutual: GREEN}
+      - id: term_2_to_3yr
+        description: Term of 2 to 3 years.
+        colors: {discloser: YELLOW, recipient: GREEN, mutual: GREEN}
+      - id: term_4_to_5yr
+        description: Term of 4 to 5 years.
+        colors: {discloser: YELLOW, recipient: GREEN, mutual: GREEN}
+      - id: term_over_5yr
+        description: Term of more than 5 years.
+        colors: {discloser: YELLOW, recipient: GREEN, mutual: GREEN}
+      - id: no_fixed_term
+        description: No fixed term; the agreement runs until terminated.
+        colors: {discloser: YELLOW, recipient: YELLOW, mutual: YELLOW}
+    modifiers:
+      - id: no_termination_on_notice
+        condition: Neither party may terminate early on written notice.
+        effect: bump_one_color   # GREEN -> YELLOW, YELLOW -> RED
+    notes: >
+      Discloser is YELLOW at every term length. The playbook owner kept this
+      when asked to confirm. Combined with the modifier, a discloser-side NDA
+      with no termination-on-notice right is RED. Revisit after evals.
+    fallbacks:
+      - id: term_3yr_30day_notice
+        applies_to: [term_1yr_or_less, term_2_to_3yr, term_4_to_5yr, term_over_5yr, no_fixed_term]
+        postures: [discloser, recipient, mutual]
+        action: replace
+        text: >
+          Term and Termination. This Agreement begins on the Effective Date and
+          continues for three (3) years unless either party terminates it
+          earlier on thirty (30) days' prior written notice to the other party.
+          Termination does not relieve either party of its obligations with
+          respect to Confidential Information disclosed before the effective
+          date of termination, which survive as set forth in Section [__].
+
+  - id: survival
+    name: Survival
+    description: How long confidentiality obligations last after the agreement expires or is terminated.
+    patterns:
+      - id: survival_1yr_or_less
+        description: Obligations survive 1 year or less.
+        colors: {discloser: YELLOW, recipient: GREEN, mutual: GREEN}
+      - id: survival_2_to_3yr
+        description: Obligations survive 2 to 3 years.
+        colors: {discloser: YELLOW, recipient: GREEN, mutual: GREEN}
+      - id: survival_4_to_5yr
+        description: Obligations survive 4 to 5 years.
+        colors: {discloser: YELLOW, recipient: GREEN, mutual: GREEN}
+      - id: survival_over_5yr
+        description: Obligations survive a fixed period longer than 5 years.
+        colors: {discloser: YELLOW, recipient: GREEN, mutual: GREEN}
+      - id: survival_perpetual
+        description: Obligations survive indefinitely for all Confidential Information.
+        colors: {discloser: GREEN, recipient: YELLOW, mutual: GREEN}
+    modifiers:
+      - id: no_trade_secret_carveout
+        condition: >
+          Survival is a fixed period and there is no carve-out keeping trade
+          secrets protected for as long as they remain trade secrets.
+        postures: [discloser]
+        effect: set_red
+    fallbacks:
+      - id: survival_make_perpetual
+        applies_to: [survival_1yr_or_less, survival_2_to_3yr, survival_4_to_5yr, survival_over_5yr]
+        postures: [discloser]
+        action: replace
+        text: >
+          Survival. The Receiving Party's obligations with respect to
+          Confidential Information survive any expiration or termination of
+          this Agreement and continue until that Confidential Information
+          becomes publicly available through no fault of the Receiving Party or
+          otherwise falls within an exclusion in Section [__].
+      - id: survival_3yr
+        applies_to: [survival_perpetual]
+        postures: [recipient]
+        action: replace
+        notes: The bracketed trade secret proviso is optional; the reviewing lawyer decides each time.
+        text: >
+          Survival. The Receiving Party's obligations with respect to
+          Confidential Information survive for three (3) years after the
+          expiration or termination of this Agreement[; provided that, for any
+          Confidential Information that is a trade secret under applicable law,
+          those obligations continue for as long as the information remains a
+          trade secret].
+
+  - id: non_solicit
+    name: Non-solicit
+    description: Any restriction on soliciting or hiring the other party's employees, customers, or suppliers.
+    patterns:
+      - id: no_non_solicit
+        description: No non-solicit or no-hire of any kind.
+        colors: {discloser: GREEN, recipient: GREEN, mutual: GREEN}
+      - id: narrow_employee_non_solicit
+        description: Employee non-solicit limited to people met through the deal, 12 months or less, with a carve-out for general job ads.
+        colors: {discloser: RED, recipient: RED, mutual: RED}
+      - id: broad_employee_non_solicit
+        description: Employee non-solicit covering all employees, or with no general job-ad carve-out.
+        colors: {discloser: RED, recipient: RED, mutual: RED}
+      - id: long_employee_non_solicit
+        description: Employee non-solicit lasting more than 12 months.
+        colors: {discloser: RED, recipient: RED, mutual: RED}
+      - id: no_hire
+        description: Bars hiring the other party's employees, not just soliciting them.
+        colors: {discloser: RED, recipient: RED, mutual: RED}
+      - id: customer_supplier_non_solicit
+        description: Bars soliciting the other party's customers or suppliers.
+        colors: {discloser: RED, recipient: RED, mutual: RED}
+    notes: Bright line. Any non-solicit in any posture is RED. Watch for these buried in boilerplate.
+    fallbacks:
+      - id: non_solicit_strike
+        applies_to: [narrow_employee_non_solicit, broad_employee_non_solicit, long_employee_non_solicit, no_hire, customer_supplier_non_solicit]
+        postures: [discloser, recipient, mutual]
+        action: strike
+        text: Delete the non-solicitation provision in its entirety.
+
+  - id: non_compete
+    name: Non-compete
+    description: Any restriction on competing, developing competing products, or acquiring the other party.
+    patterns:
+      - id: no_non_compete
+        description: No non-compete, competitive restriction, or standstill.
+        colors: {discloser: GREEN, recipient: GREEN, mutual: GREEN}
+      - id: express_non_compete
+        description: Express restriction on competing in a market, territory, or line of business.
+        colors: {discloser: RED, recipient: RED, mutual: RED}
+      - id: disguised_non_compete
+        description: >
+          Restriction on developing, or having developed, products or services
+          that compete with the other party's, even if not labeled a non-compete.
+        colors: {discloser: RED, recipient: RED, mutual: RED}
+      - id: standstill
+        description: Restriction on acquiring the other party's securities or pursuing a takeover.
+        colors: {discloser: RED, recipient: RED, mutual: RED}
+    notes: >
+      Bright line. Silence on independent development (no express
+      freedom-to-develop clause) does not affect the color.
+    fallbacks:
+      - id: non_compete_strike
+        applies_to: [express_non_compete, disguised_non_compete, standstill]
+        postures: [discloser, recipient, mutual]
+        action: strike
+        text: Delete the non-competition, competitive-restriction, or standstill provision in its entirety.
+
+  - id: ip_assignment
+    name: IP assignment
+    description: Whether the NDA transfers or licenses intellectual property between the parties.
+    patterns:
+      - id: express_no_license
+        description: No IP assignment, and an express clause stating that no license or other rights are granted.
+        colors: {discloser: GREEN, recipient: GREEN, mutual: GREEN}
+      - id: silent_on_ip
+        description: No IP assignment, but no express no-license clause either.
+        colors: {discloser: YELLOW, recipient: GREEN, mutual: YELLOW}
+      - id: feedback_clause
+        description: The recipient's suggestions or feedback become owned by, or freely licensed to, the discloser.
+        colors: {discloser: GREEN, recipient: GREEN, mutual: GREEN}
+      - id: assign_improvements
+        description: The recipient must assign improvements or derivatives built on the discloser's information.
+        colors: {discloser: GREEN, recipient: YELLOW, mutual: YELLOW}
+      - id: broad_assignment
+        description: Any IP developed in connection with the Purpose is assigned to the other party.
+        colors: {discloser: RED, recipient: RED, mutual: RED}
+    fallbacks:
+      - id: ip_ownership_no_license
+        applies_to: [silent_on_ip, assign_improvements, broad_assignment]
+        postures: [discloser, recipient, mutual]
+        action: replace
+        text: >
+          Ownership; No License. All Confidential Information remains the
+          property of the Disclosing Party. Nothing in this Agreement grants
+          the Receiving Party any license or other right in or to the
+          Disclosing Party's Confidential Information or intellectual property,
+          except the limited right to use Confidential Information for the
+          Purpose. Nothing in this Agreement requires either party to assign to
+          the other any intellectual property it develops, or transfers
+          ownership of any intellectual property between the parties.
+
+  - id: residuals
+    name: Residuals
+    description: Whether the recipient may freely use information retained in the unaided memory of its personnel.
+    patterns:
+      - id: no_residuals
+        description: No residuals clause.
+        colors: {discloser: GREEN, recipient: GREEN, mutual: GREEN}
+      - id: narrow_residuals
+        description: >
+          Residuals limited to unaided memory, no intentional memorization,
+          trade secrets excluded, and no patent or copyright license.
+        colors: {discloser: RED, recipient: GREEN, mutual: RED}
+      - id: broad_residuals
+        description: Free use of anything retained in memory, with few or no limits.
+        colors: {discloser: RED, recipient: GREEN, mutual: RED}
+    notes: Discloser and recipient columns were swapped from the first answers at the playbook owner's direction.
+    fallbacks:
+      - id: residuals_strike
+        applies_to: [narrow_residuals, broad_residuals]
+        postures: [discloser, mutual]
+        action: strike
+        text: Delete the residuals provision in its entirety.
+
+  - id: indemnification
+    name: Indemnification
+    description: Whether either party must indemnify the other for breach.
+    patterns:
+      - id: no_indemnity
+        description: No indemnity; remedies are injunctive relief and ordinary damages.
+        colors: {discloser: GREEN, recipient: GREEN, mutual: GREEN}
+      - id: mutual_indemnity
+        description: Each party indemnifies the other for its own breach.
+        colors: {discloser: RED, recipient: RED, mutual: RED}
+      - id: we_indemnify_them
+        description: One-way indemnity running from us to the other party.
+        colors: {discloser: RED, recipient: RED, mutual: RED}
+      - id: they_indemnify_us
+        description: One-way indemnity running from the other party to us.
+        colors: {discloser: GREEN, recipient: GREEN, mutual: GREEN}
+    notes: Any indemnity running from us is RED.
+    fallbacks:
+      - id: indemnity_strike
+        applies_to: [mutual_indemnity, we_indemnify_them]
+        postures: [discloser, recipient, mutual]
+        action: strike
+        text: Delete the indemnification provision in its entirety.
+
+  - id: ci_definition
+    name: Definition of confidential information
+    description: What counts as Confidential Information and what is excluded.
+    patterns:
+      - id: marking_required
+        description: Written information must be marked confidential, and oral information confirmed in writing (typically within 30 days).
+        colors: {discloser: RED, recipient: GREEN, mutual: RED}
+      - id: broad_definition
+        description: All information disclosed, marked or not, plus anything a reasonable person would understand to be confidential.
+        colors: {discloser: GREEN, recipient: GREEN, mutual: GREEN}
+      - id: missing_exclusions
+        description: >
+          Missing one or more of the four standard exclusions (public, already
+          known, received from a third party, independently developed).
+        colors: {discloser: GREEN, recipient: YELLOW, mutual: YELLOW}
+    notes: marking_required and missing_exclusions were swapped from the first answers at the playbook owner's direction.
+    fallbacks:
+      - id: ci_broad_definition
+        applies_to: [marking_required]
+        postures: [discloser, mutual]
+        action: replace
+        text: >
+          Confidential Information. "Confidential Information" means all
+          non-public information disclosed by or on behalf of the Disclosing
+          Party to the Receiving Party, in any form or medium, whether or not
+          marked or designated as confidential, that is identified as
+          confidential at the time of disclosure or that a reasonable person
+          would understand to be confidential given the nature of the
+          information and the circumstances of disclosure.
+      - id: ci_standard_exclusions
+        applies_to: [missing_exclusions]
+        postures: [recipient, mutual]
+        action: replace
+        text: >
+          Exclusions. Confidential Information does not include information
+          that the Receiving Party can demonstrate (a) is or becomes generally
+          available to the public through no fault of the Receiving Party; (b)
+          was known to the Receiving Party without restriction before receipt
+          from the Disclosing Party; (c) is rightfully received from a third
+          party without a duty of confidentiality; or (d) is independently
+          developed by the Receiving Party without use of or reference to the
+          Disclosing Party's Confidential Information.
