@@ -19,6 +19,17 @@ class Clause(BaseModel):
     end: int = Field(description="Character offset where the clause ends in Document.text.")
 
 
+class RetrievedText(BaseModel):
+    """One retrieval hit: a playbook fallback or a reference-corpus clause."""
+
+    source: str = Field(description="'playbook' or 'corpus'.")
+    id: str = Field(description="Fallback id, or 'file:clause-id' for corpus chunks.")
+    rule_id: str | None = None
+    action: str | None = Field(None, description="'replace' or 'strike' (playbook fallbacks only).")
+    text: str
+    distance: float = Field(description="Cosine distance to the query; lower is closer.")
+
+
 class Document(BaseModel):
     """A parsed NDA. Invariant: text[clause.start:clause.end] == clause.text."""
 

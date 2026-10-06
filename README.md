@@ -10,7 +10,7 @@ Checks an inbound NDA against an attorney-authored playbook and returns a GREEN 
 |---|---|---|
 | 1 | Playbook rubric (`playbook/rubric.yaml`) | Done |
 | 2 | Ingestion: parse, split into clauses, normalize | Done |
-| 3 | Retrieval (RAG) over playbook fallbacks | Not started |
+| 3 | Retrieval (RAG) over playbook fallbacks | Done |
 | 4 | Reasoning: Claude tool use + Pydantic validation | Not started |
 | 5 | Agent loop: retrieve, draft redline, self-check | Not started |
 | 6 | Eval harness | Not started |
@@ -66,3 +66,23 @@ Known limitations:
 - Headers, footers, footnotes, comments, and tracked-change markup in `.docx` are not read.
 - Normalization changes characters (quotes, dashes). Clause text is therefore faithful to the wording of the source but not byte-identical to it. The file hash identifies the exact original.
 - A paragraph that happens to begin like a section number ("2.5 million dollars...") would be treated as a new section.
+
+## Stage 3: retrieval
+
+`nda_triage/retrieval.py` embeds the playbook's fallbacks into a local Chroma index (`.chroma/`, gitignored). A flagged clause is embedded the same way, and its nearest fallbacks come back.
+
+- **What gets embedded.** A query is a problem clause, but a fallback is the fix, and the two don't read alike ("neither party will solicit..." vs. "Delete the non-solicitation provision"). Each index document therefore holds the problem the fallback solves (the rule plus the descriptions of the patterns it applies to) followed by the fallback text.
+- **Posture is a hard filter.** A recipient-only fallback is never offered to a discloser, however similar it looks. The rule can also be used as a filter when the caller knows it.
+- **Embedding model: Chroma's default, all-MiniLM-L6-v2.** It's small (384 dimensions), runs locally on CPU, needs no API key, sends no text off the machine, and requires no extra package. It's weaker on legal phrasing than large hosted models. Swapping it is a one-line change in `Retriever.__init__`.
+- **The index rebuilds itself** when any fallback in `rubric.yaml` changes. The collection stores a hash of its documents and is rebuilt on a mismatch.
+- **Chunking.** Each fallback is one chunk. Reference NDAs placed in `corpus/` are chunked by clause using the Stage 2 splitter, so a chunk is always a whole section.
+- **Exact lookup vs. search.** Once classification (Stage 4) has named the rule, pattern, and posture, `lookup_fallbacks` gets the right fallback straight from the rubric, with no embeddings. Semantic search is for cases where the classifier is unsure, and for the reference corpus. With only 12 fallbacks, exact lookup is the more reliable path. Embedding search is in this build to show the technique and to scale to a real corpus. The evals will compare the two.
+
+Try it:
+
+```bash
+.venv/Scripts/python -m nda_triage.retrieval --posture discloser --file samples/sample_nda.txt --clause sec-5
+.venv/Scripts/python -m nda_triage.retrieval --posture mutual --text "Recipient may use information retained in the unaided memory of its employees."
+```
+
+**A first observation, not yet a measured result:** for the sample's buried non-solicit (`sec-8.3`), unfiltered search ranks the term fallback first (distance 0.553) and the non-solicit fallback second (0.559). The clause mixes cooperation and duration language ("during the term and for twelve (12) months"), and a small embedding model latches onto the duration. Clear single-topic clauses (survival, term, residuals) rank the right fallback first. This is why the agent will pass the classified rule as a filter, or use exact lookup, instead of trusting unfiltered similarity. Stage 6 will measure retrieval accuracy properly.
