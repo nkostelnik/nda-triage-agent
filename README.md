@@ -9,12 +9,22 @@ Checks an inbound NDA against an attorney-authored playbook and returns a GREEN 
 | Stage | What | Status |
 |---|---|---|
 | 1 | Playbook rubric (`playbook/rubric.yaml`) | Done |
-| 2 | Ingestion: parse, split into clauses, normalize | Not started |
+| 2 | Ingestion: parse, split into clauses, normalize | Done |
 | 3 | Retrieval (RAG) over playbook fallbacks | Not started |
 | 4 | Reasoning: Claude tool use + Pydantic validation | Not started |
 | 5 | Agent loop: retrieve, draft redline, self-check | Not started |
 | 6 | Eval harness | Not started |
 | 7 | CLI | Not started |
+
+## Setup
+
+Requires Python 3.11+.
+
+```bash
+python -m venv .venv
+.venv/Scripts/python -m pip install -r requirements-dev.txt   # Windows; on macOS/Linux use .venv/bin/python
+.venv/Scripts/python -m pytest -q
+```
 
 ## Stage 1: the rubric
 
@@ -28,3 +38,31 @@ Design choices:
 - **Fallbacks are addressable.** Each fallback has an `id` and lists the patterns it fixes (`applies_to`). This lets the eval harness check whether retrieval returned the right fallback, not just a plausible-looking one.
 - **Overall verdict: the worst rule wins.**
 - **Provenance notes.** Where an interview answer was skipped, corrected, or changed on review, the rule's `notes` field records it.
+
+`nda_triage/rubric.py` loads the YAML into Pydantic models and rejects a bad rubric when it loads: unknown keys (typos), a pattern missing a posture, a fallback pointing at a pattern that doesn't exist, or duplicate ids.
+
+## Stage 2: ingestion
+
+`nda_triage/ingest.py` turns a file into a `Document` of `Clause`s (`nda_triage/models.py`) in three steps:
+
+1. **Read** `.txt` or `.docx` into paragraphs. Word keeps automatic section numbers ("3.2", "(a)") outside the paragraph text, so a plain text extraction loses them. The reader rebuilds the visible numbers from the document's numbering definitions. Tables are read in place. In `.txt` files, hard-wrapped lines are rejoined.
+2. **Normalize** the Unicode: curly quotes, non-breaking spaces, long dashes, ligatures, and extra whitespace all get one standard form, so later stages see consistent text.
+3. **Split** on the document's own structure, not fixed-size chunks. A new clause starts at each numbered section ("3.", "3.2", "Section 3", "Article IV"). Lettered subparts like "(a)" stay with their parent, because an exclusions list is one clause. Text before the first section becomes `preamble`, and "IN WITNESS WHEREOF" starts `signature`. Unnumbered documents fall back to headings, then to one clause per paragraph.
+
+Each clause gets a stable id (`sec-8.3`), its heading, and character offsets into the full document text. This is what lets every flag trace back to the exact source text. The `Document` also records a SHA-256 hash of the original file.
+
+Try it:
+
+```bash
+.venv/Scripts/python -m nda_triage.ingest samples/sample_nda.txt
+.venv/Scripts/python -m nda_triage.ingest samples/sample_nda.txt --json
+```
+
+`samples/sample_nda.txt` is synthetic. Section 8.3 ("Cooperation") hides an employee non-solicit inside the miscellaneous provisions, which is the kind of trap the later stages need to catch.
+
+Known limitations:
+
+- The Word numbering rebuild covers how NDAs are normally numbered. It does not model every Word rule: list restarts through overrides, and two lists that share a numbering definition and continue each other.
+- Headers, footers, footnotes, comments, and tracked-change markup in `.docx` are not read.
+- Normalization changes characters (quotes, dashes). Clause text is therefore faithful to the wording of the source but not byte-identical to it. The file hash identifies the exact original.
+- A paragraph that happens to begin like a section number ("2.5 million dollars...") would be treated as a new section.
