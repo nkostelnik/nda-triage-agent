@@ -4,6 +4,10 @@ Checks an inbound NDA against an attorney-authored playbook and returns a GREEN 
 
 **Output from this tool requires attorney review. It is not legal advice.** Use test data only. Never run real client or confidential NDAs through it.
 
+`playbook/rubric.yaml` is a demonstration playbook. It does not reflect the positions of any client or employer. All sample documents are synthetic, with fictional parties.
+
+Licensed under the MIT License (see `LICENSE`).
+
 ## Status
 
 | Stage | What | Status |
