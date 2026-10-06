@@ -11,7 +11,7 @@ Checks an inbound NDA against an attorney-authored playbook and returns a GREEN 
 | 1 | Playbook rubric (`playbook/rubric.yaml`) | Done |
 | 2 | Ingestion: parse, split into clauses, normalize | Done |
 | 3 | Retrieval (RAG) over playbook fallbacks | Done |
-| 4 | Reasoning: Claude tool use + Pydantic validation | Not started |
+| 4 | Reasoning: Claude structured output + Pydantic validation | Built; offline tests pass, live run pending |
 | 5 | Agent loop: retrieve, draft redline, self-check | Not started |
 | 6 | Eval harness | Not started |
 | 7 | CLI | Not started |
@@ -86,3 +86,23 @@ Try it:
 ```
 
 **A first observation, not yet a measured result:** for the sample's buried non-solicit (`sec-8.3`), unfiltered search ranks the term fallback first (distance 0.553) and the non-solicit fallback second (0.559). The clause mixes cooperation and duration language ("during the term and for twelve (12) months"), and a small embedding model latches onto the duration. Clear single-topic clauses (survival, term, residuals) rank the right fallback first. This is why the agent will pass the classified rule as a filter, or use exact lookup, instead of trusting unfiltered similarity. Stage 6 will measure retrieval accuracy properly.
+
+## Stage 4: reasoning
+
+`nda_triage/classify.py` makes one Claude call (`claude-sonnet-5-5`) per rubric rule, plus one posture cross-check call. Each call sees the whole NDA and a single rule.
+
+- **One call per rule, not per clause.** Several playbook positions are about what's *missing*: no termination right, no trade-secret carve-out, missing exclusions. A call that sees one clause at a time can't notice an absence. A call that reads the whole NDA for one rule can. The cost is sending the NDA ten times. Prompt caching handles that: the system prompt and the document form an identical prefix on every call. The first call runs alone to write the cache, and the nine rule calls then run in parallel and read it at about a tenth of the input price. Token use and estimated cost are reported on every run.
+- **The model finds facts; the rubric decides colors.** The model isn't told the posture. It reports which of the rule's patterns the NDA matches, citing clause ids and verbatim quotes. Python then looks up each pattern's color for the stated posture, applies modifiers, and takes the worst color. The risk call is deterministic, auditable, and testable without the API.
+- **Structured output, validated by Pydantic.** Each call's response schema is built from that rule's pattern ids, so the model can only name patterns that exist. The SDK validates the response against the Pydantic model. Forcing a particular tool call isn't supported on this model, so structured outputs are the supported way to force JSON.
+- **Verification.** Every cited clause id must exist, and every quote must appear in the cited clause. A finding that fails either check is marked `quote_verified: false`, and its rule can't be GREEN.
+- **Fail closed.** If a rule can't be resolved (nothing matched and the rubric has no position for that, a citation didn't verify, or the model declined), the rule is YELLOW with a `needs_review` note. It is never silently GREEN.
+- **Refusal fallback.** Requests opt into the API's server-side fallback (`fallbacks: "default"`). If the model declines a request, the API retries it on a fallback model. Every model that served a call is listed in the output's usage.
+- **Who "us" is.** Patterns like "one-way, protects us" and "we indemnify them" need to know which party is the client, so the CLI takes `--party`.
+
+The tests in `tests/test_classify.py` use a fake API client. They check everything except the model's judgment: prompt shape, the cacheable prefix, schemas, scoring, modifiers, verification, and failure handling. Stage 6 measures the model's judgment.
+
+Run it (requires `ANTHROPIC_API_KEY` in the environment; the sample is synthetic):
+
+```bash
+.venv/Scripts/python -m nda_triage.classify samples/sample_nda.txt --posture mutual --party "Acme Analytics, Inc."
+```

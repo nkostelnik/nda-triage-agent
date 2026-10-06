@@ -30,6 +30,55 @@ class RetrievedText(BaseModel):
     distance: float = Field(description="Cosine distance to the query; lower is closer.")
 
 
+class Finding(BaseModel):
+    """One fact the model found for a rule, with the color the rubric assigns it."""
+
+    pattern_id: str
+    clause_ids: list[str] = Field(description="Clauses the finding rests on; empty if the finding is an absence.")
+    quote: str = Field(description="Verbatim excerpt from the cited clause(s); empty for an absence.")
+    reason: str = Field(description="One-line reason, from the model.")
+    color: str = Field(description="Looked up in the rubric for the stated posture, not chosen by the model.")
+    quote_verified: bool = Field(description="True if the quote really appears in the cited clauses.")
+
+
+class RuleResult(BaseModel):
+    rule_id: str
+    color: str
+    findings: list[Finding]
+    modifiers_applied: list[str] = []
+    needs_review: str | None = Field(None, description="Why the rule could not be resolved automatically, if it couldn't.")
+
+
+class PostureCheck(BaseModel):
+    stated: str
+    apparent: str = Field(description="What the document's structure suggests: discloser, recipient, mutual, or unclear.")
+    consistent: bool
+    reason: str
+
+
+class Usage(BaseModel):
+    """Token accounting across all calls for one NDA."""
+
+    calls: int = 0
+    input_tokens: int = 0
+    cache_write_tokens: int = 0
+    cache_read_tokens: int = 0
+    output_tokens: int = 0
+    models: list[str] = Field([], description="Every model that served a call (a fallback model would appear here).")
+
+
+class TriageResult(BaseModel):
+    source_name: str
+    sha256: str
+    posture: str
+    party: str
+    color: str
+    rules: list[RuleResult]
+    posture_check: PostureCheck | None
+    usage: Usage
+    notice: str = "Requires attorney review. Not legal advice."
+
+
 class Document(BaseModel):
     """A parsed NDA. Invariant: text[clause.start:clause.end] == clause.text."""
 
