@@ -67,6 +67,32 @@ class Usage(BaseModel):
     models: list[str] = Field([], description="Every model that served a call (a fallback model would appear here).")
 
 
+class SelfCheck(BaseModel):
+    """The agent's review of its own draft before returning it."""
+
+    resolved: bool = Field(description="Re-reviewing the revised document no longer flags this issue.")
+    rule_color_after: str = Field(description="The rule's color when the revised document is reviewed again.")
+    faithful: bool = Field(description="The draft adds nothing beyond the original clause and the playbook fallback.")
+    issues: list[str] = []
+    attempts: int = Field(description="Drafts written: 1, or 2 if the first failed the check.")
+
+
+class Redline(BaseModel):
+    rule_id: str
+    pattern_id: str
+    fallback_id: str | None = None
+    retrieval: str = Field(description="'exact' (rubric lookup), 'semantic' (vector search), or 'none'.")
+    semantic_top: list[str] = Field([], description="Vector search's top fallback ids, kept for the evals.")
+    operation: str | None = Field(None, description="'replace', 'delete', or 'insert'.")
+    clause_id: str | None = Field(None, description="Clause replaced or deleted, or the clause an insert follows.")
+    original_text: str = ""
+    proposed_text: str = ""
+    explanation: str = ""
+    check: SelfCheck | None = None
+    status: str = Field(description="'passed', 'needs_attorney', or 'not_drafted'.")
+    note: str | None = None
+
+
 class TriageResult(BaseModel):
     source_name: str
     sha256: str
@@ -76,6 +102,7 @@ class TriageResult(BaseModel):
     rules: list[RuleResult]
     posture_check: PostureCheck | None
     usage: Usage
+    redlines: list[Redline] = []
     notice: str = "Requires attorney review. Not legal advice."
 
 

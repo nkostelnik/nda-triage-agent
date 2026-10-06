@@ -326,21 +326,23 @@ def parse_nda(path: str | Path) -> Document:
     raw = path.read_bytes()
     paras = [Para(normalize(p.text), p.is_heading_style) for p in read_paragraphs(path)]
     paras = [p for p in paras if p.text]
+    parts = [(d.id, d.number, d.heading, "\n".join(d.paras)) for d in split_clauses(paras)]
+    return assemble(path.name, hashlib.sha256(raw).hexdigest(), parts)
 
-    # Lay the clauses end to end in one string and record each one's offsets,
-    # so a flag on a clause can be highlighted in the full document later.
-    clauses, pieces, offset = [], [], 0
-    for d in split_clauses(paras):
-        text = "\n".join(d.paras)
-        clauses.append(Clause(id=d.id, number=d.number, heading=d.heading,
+
+def assemble(source_name: str, sha256: str, parts: list[tuple[str, str | None, str | None, str]]) -> Document:
+    """Lay (id, number, heading, text) clauses end to end in one string and
+    record each one's offsets, so a flag on a clause can be highlighted in the
+    full document. Also used to build a revised copy of a document."""
+    clauses, offset = [], 0
+    for clause_id, number, heading, text in parts:
+        clauses.append(Clause(id=clause_id, number=number, heading=heading,
                               text=text, start=offset, end=offset + len(text)))
-        pieces.append(text)
         offset += len(text) + 2  # the "\n\n" separator below
-
     return Document(
-        source_name=path.name,
-        sha256=hashlib.sha256(raw).hexdigest(),
-        text="\n\n".join(pieces),
+        source_name=source_name,
+        sha256=sha256,
+        text="\n\n".join(p[3] for p in parts),
         clauses=clauses,
     )
 

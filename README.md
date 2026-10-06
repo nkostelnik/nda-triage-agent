@@ -12,7 +12,7 @@ Checks an inbound NDA against an attorney-authored playbook and returns a GREEN 
 | 2 | Ingestion: parse, split into clauses, normalize | Done |
 | 3 | Retrieval (RAG) over playbook fallbacks | Done |
 | 4 | Reasoning: Claude structured output + Pydantic validation | Built; offline tests pass, live run pending |
-| 5 | Agent loop: retrieve, draft redline, self-check | Not started |
+| 5 | Agent loop: retrieve, draft redline, self-check | Built; offline tests pass, live run pending |
 | 6 | Eval harness | Not started |
 | 7 | CLI | Not started |
 
@@ -105,4 +105,27 @@ Run it (requires `ANTHROPIC_API_KEY` in the environment; the sample is synthetic
 
 ```bash
 .venv/Scripts/python -m nda_triage.classify samples/sample_nda.txt --posture mutual --party "Acme Analytics, Inc."
+```
+
+## Stage 5: the redline agent
+
+`nda_triage/agent.py` runs a bounded loop for every YELLOW or RED finding:
+
+1. **Retrieve** the fallback. Exact rubric lookup by rule, pattern, and posture comes first. Vector search, restricted to the rule, is used only if the rubric has no exact match. Vector search's unfiltered top 3 is recorded for every redline either way, so the evals can measure how often it would have picked the right fallback on its own.
+2. **Draft** the redline with Claude, grounded in the fallback. The drafter may adapt only names, defined terms, and cross-references. For a strike fallback, it removes only the offending language, which matters when a non-solicit is buried inside an otherwise harmless clause.
+3. **Check** the draft two ways:
+   - **Re-review.** Apply the redline to a copy of the NDA and run the same Stage 4 classifier and rubric on it. The issue must no longer be flagged. The agent's fix is judged by the same reviewer that raised the flag, not by asking the drafter whether it did a good job.
+   - **Fidelity.** A separate call confirms the draft adds nothing beyond the original clause and the fallback.
+4. **Revise once** if either check fails, feeding the problems back. If the second draft also fails, the redline is returned marked `needs_attorney` with the reasons. It doesn't loop indefinitely.
+
+Findings whose quotes couldn't be verified are not redlined, because drafting against an unverified citation would compound an error. Those rules are already marked `needs_review`.
+
+**Why a bounded workflow rather than an open-ended agent:** the steps are fixed and capped at two attempts, so cost is predictable and every run can be audited step by step. For legal work that's worth more than letting the model decide its own next step.
+
+The tests in `tests/test_agent.py` use a scripted fake client whose reviewer answers based on the document it's shown. A draft that actually removes the non-solicit passes re-review, and one that only rewords it is caught and revised.
+
+Run it (requires `ANTHROPIC_API_KEY`):
+
+```bash
+.venv/Scripts/python -m nda_triage.agent samples/sample_nda.txt --posture mutual --party "Acme Analytics, Inc."
 ```

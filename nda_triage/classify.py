@@ -152,18 +152,26 @@ class PostureAssessment(BaseModel):
 # The API call
 # ---------------------------------------------------------------------------
 
-def ask(client, doc_block: dict, question: str, schema: type[BaseModel]) -> tuple[BaseModel, Usage]:
+def doc_block_for(doc: Document) -> dict:
+    """The document as a content block, marked as the end of the cacheable prefix."""
+    return {"type": "text", "text": render_document(doc), "cache_control": {"type": "ephemeral"}}
+
+
+def ask(client, doc_block: dict | None, question: str, schema: type[BaseModel],
+        system: str = SYSTEM_PROMPT) -> tuple[BaseModel, Usage]:
     """One structured-output call. The system prompt and the document come
     first and never change between calls, so they form the cached prefix;
-    only the question after them varies."""
+    only the question after them varies. doc_block may be None for a call
+    that doesn't need the document."""
+    content = ([doc_block] if doc_block else []) + [{"type": "text", "text": question}]
     try:
         response = client.beta.messages.parse(
             model=MODEL,
             max_tokens=16000,
             betas=[FALLBACK_BETA],
             fallbacks="default",
-            system=SYSTEM_PROMPT,
-            messages=[{"role": "user", "content": [doc_block, {"type": "text", "text": question}]}],
+            system=system,
+            messages=[{"role": "user", "content": content}],
             output_format=schema,
         )
     except ValidationError as e:  # the response didn't fit the schema
@@ -264,7 +272,7 @@ def estimated_cost(u: Usage) -> float:
 
 def triage(doc: Document, rubric: Rubric, posture: Posture, party: str, client=None, max_workers: int = 5) -> TriageResult:
     client = client or anthropic.Anthropic()
-    doc_block = {"type": "text", "text": render_document(doc), "cache_control": {"type": "ephemeral"}}
+    doc_block = doc_block_for(doc)
     usages: list[Usage] = []
 
     # The first call runs alone so it writes the cache; the rule calls that
