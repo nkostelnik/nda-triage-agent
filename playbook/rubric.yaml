@@ -52,15 +52,15 @@ rules:
         description: >
           Labeled mutual, but the terms favor the other side (for example, the
           definition of Confidential Information or the exclusions differ by party).
-        colors: {discloser: GREEN, recipient: GREEN, mutual: GREEN}
+        colors: {discloser: RED, recipient: GREEN, mutual: RED}
     notes: >
       one_way_protects_them under recipient posture was changed from YELLOW to
-      GREEN on review. labeled_mutual_asymmetric was colored on review after
-      being left blank in the interview; it is GREEN in every posture, so the
-      posture cross-check warning is the only signal for it.
+      GREEN on review. labeled_mutual_asymmetric was left blank in the
+      interview, then colored on review: substance over label, so it is
+      treated the same as one_way_protects_them.
     fallbacks:
       - id: mutuality_mutual_obligations
-        applies_to: [one_way_protects_them]
+        applies_to: [one_way_protects_them, labeled_mutual_asymmetric]
         postures: [discloser, recipient, mutual]
         action: replace
         text: >
