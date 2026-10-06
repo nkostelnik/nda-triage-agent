@@ -27,4 +27,4 @@ Design choices:
 - **Modifiers.** A few positions are adjustments rather than patterns. For example, a missing termination-on-notice right bumps the term color up one level.
 - **Fallbacks are addressable.** Each fallback has an `id` and lists the patterns it fixes (`applies_to`). This lets the eval harness check whether retrieval returned the right fallback, not just a plausible-looking one.
 - **Overall verdict: the worst rule wins.**
-- **Provenance notes.** Where an interview answer was skipped or corrected, the rule's `notes` field records it. Open items to revisit after evals: the discloser-side term position (YELLOW at every length) and the "labeled mutual but asymmetric" pattern, which has no colors yet.
+- **Provenance notes.** Where an interview answer was skipped, corrected, or changed on review, the rule's `notes` field records it.

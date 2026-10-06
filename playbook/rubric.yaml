@@ -47,11 +47,17 @@ rules:
         colors: {discloser: GREEN, recipient: GREEN, mutual: GREEN}
       - id: one_way_protects_them
         description: One-way NDA that protects only the other party's information.
-        colors: {discloser: RED, recipient: YELLOW, mutual: RED}
+        colors: {discloser: RED, recipient: GREEN, mutual: RED}
+      - id: labeled_mutual_asymmetric
+        description: >
+          Labeled mutual, but the terms favor the other side (for example, the
+          definition of Confidential Information or the exclusions differ by party).
+        colors: {discloser: GREEN, recipient: GREEN, mutual: GREEN}
     notes: >
-      A fourth pattern (labeled mutual but asymmetric in substance) was left
-      without colors during the interview. It is handled by the posture
-      cross-check warning instead. Revisit after evals.
+      one_way_protects_them under recipient posture was changed from YELLOW to
+      GREEN on review. labeled_mutual_asymmetric was colored on review after
+      being left blank in the interview; it is GREEN in every posture, so the
+      posture cross-check warning is the only signal for it.
     fallbacks:
       - id: mutuality_mutual_obligations
         applies_to: [one_way_protects_them]
@@ -76,13 +82,13 @@ rules:
         colors: {discloser: YELLOW, recipient: GREEN, mutual: GREEN}
       - id: term_2_to_3yr
         description: Term of 2 to 3 years.
-        colors: {discloser: YELLOW, recipient: GREEN, mutual: GREEN}
+        colors: {discloser: GREEN, recipient: GREEN, mutual: GREEN}
       - id: term_4_to_5yr
         description: Term of 4 to 5 years.
-        colors: {discloser: YELLOW, recipient: GREEN, mutual: GREEN}
+        colors: {discloser: GREEN, recipient: GREEN, mutual: GREEN}
       - id: term_over_5yr
         description: Term of more than 5 years.
-        colors: {discloser: YELLOW, recipient: GREEN, mutual: GREEN}
+        colors: {discloser: GREEN, recipient: GREEN, mutual: GREEN}
       - id: no_fixed_term
         description: No fixed term; the agreement runs until terminated.
         colors: {discloser: YELLOW, recipient: YELLOW, mutual: YELLOW}
@@ -91,9 +97,9 @@ rules:
         condition: Neither party may terminate early on written notice.
         effect: bump_one_color   # GREEN -> YELLOW, YELLOW -> RED
     notes: >
-      Discloser is YELLOW at every term length. The playbook owner kept this
-      when asked to confirm. Combined with the modifier, a discloser-side NDA
-      with no termination-on-notice right is RED. Revisit after evals.
+      Discloser posture was YELLOW at every length in the interview; on review
+      the playbook owner narrowed it so only a short term (1 year or less) or
+      no fixed term is YELLOW for a discloser.
     fallbacks:
       - id: term_3yr_30day_notice
         applies_to: [term_1yr_or_less, term_2_to_3yr, term_4_to_5yr, term_over_5yr, no_fixed_term]
