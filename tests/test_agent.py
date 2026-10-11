@@ -28,8 +28,9 @@ FAITHFUL = {"faithful": True, "issues": []}
 
 
 class ScriptedClient:
-    def __init__(self, drafts, checks=None):
+    def __init__(self, drafts, checks=None, answers=None):
         self.drafts, self.checks = list(drafts), list(checks or [FAITHFUL] * 4)
+        self.answers = answers or {}
         self.calls = []
         self.beta = SimpleNamespace(messages=SimpleNamespace(parse=self.parse))
 
@@ -44,12 +45,14 @@ class ScriptedClient:
             data = {"apparent_posture": "mutual", "reason": "Both protected."}
         else:
             rule_id = content[-1]["text"].split('<rule id="')[1].split('"')[0]
-            data = SAMPLE_ANSWERS[rule_id]
+            data = {"triggered_modifiers": [], **self.answers.get(rule_id, SAMPLE_ANSWERS[rule_id])}
             if rule_id == "non_solicit" and "solicit" not in content[0]["text"]:
-                data = {"findings": [{"pattern_id": "no_non_solicit", "clause_ids": [], "quote": "", "reason": "None."}]}
+                data = {"findings": [{"pattern_id": "no_non_solicit", "clause_ids": [], "quote": "", "reason": "None."}],
+                        "triggered_modifiers": []}
             elif rule_id == "non_solicit" and "for employment" not in content[0]["text"]:
                 data = {"findings": [{"pattern_id": "broad_employee_non_solicit", "clause_ids": ["sec-8.3"],
-                                      "quote": "Neither party will solicit any employee", "reason": "Still there."}]}
+                                      "quote": "Neither party will solicit any employee", "reason": "Still there."}],
+                        "triggered_modifiers": []}
         usage = SimpleNamespace(input_tokens=10, cache_creation_input_tokens=0, cache_read_input_tokens=0,
                                 output_tokens=5)
         return SimpleNamespace(parsed_output=kw["output_format"].model_validate(data), stop_reason="end_turn",
@@ -134,6 +137,18 @@ def test_no_fallback_means_not_drafted(doc, rubric):
     edited.rule("non_solicit").fallbacks = []
     result = run(doc, rubric, ScriptedClient([]), rubric_override=edited)
     assert result.redlines[0].status == "not_drafted"
+
+
+def test_two_flags_on_one_clause_get_one_redline(doc, rubric):
+    # The first live run: the model found the non-solicit both too broad and
+    # too long, and the agent drafted the same redline twice.
+    both = {"findings": [
+        {"pattern_id": "broad_employee_non_solicit", "clause_ids": ["sec-8.3"],
+         "quote": "neither party will solicit for employment any employee", "reason": "No job-ad carve-out."},
+        {"pattern_id": "long_employee_non_solicit", "clause_ids": ["sec-8.3", "sec-4"],
+         "quote": "during the term and for twelve (12) months thereafter", "reason": "Term plus 12 months."}]}
+    result = run(doc, rubric, ScriptedClient([GOOD_DRAFT], answers={"non_solicit": both}))
+    assert len(result.redlines) == 1 and result.redlines[0].status == "passed"
 
 
 def test_usage_includes_agent_calls(doc, rubric):

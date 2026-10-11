@@ -22,11 +22,13 @@ Design choices:
   posture. It reports which pattern matched and where, and the color comes
   from the attorney's rubric in Python. That keeps the risk call
   deterministic, auditable, and testable without the API.
-- Structured output instead of free text. Each call's response schema is
-  built from that rule's own pattern ids, so the model cannot name a
-  pattern that doesn't exist. The SDK validates the response against the
-  Pydantic model. (Forcing a specific tool call isn't available on this
-  model, so structured outputs are the supported way to force JSON.)
+- Structured output instead of free text. The response schema lists every
+  pattern id in the rubric, so the model cannot invent one, and the SDK
+  validates the response against the Pydantic model. The schema is shared
+  by all rule calls so they share one cache entry; Python then rejects any
+  id that belongs to a different rule. (Forcing a specific tool call isn't
+  available on this model, so structured outputs are the supported way to
+  force JSON.)
 - Trust, but verify. Every cited clause id must exist, and every quote must
   actually appear in the cited clause. A finding that fails the check is
   marked unverified and the rule can't come back GREEN.
@@ -101,7 +103,9 @@ def rule_question(rule: Rule, party: str) -> str:
     if rule.modifiers:
         lines.append("Modifiers:")
         lines += [f"- {m.id}: {m.condition.strip()}" for m in rule.modifiers]
-    lines += ["</rule>", "", "Which of this rule's patterns does the NDA match?"]
+    lines += ["</rule>", "",
+              "Which of this rule's patterns does the NDA match? Use only the pattern and modifier ids listed "
+              "in this rule."]
     return "\n".join(lines)
 
 
@@ -123,24 +127,35 @@ def posture_question(party: str) -> str:
 # Response schemas, built per rule so only real pattern ids are allowed
 # ---------------------------------------------------------------------------
 
-def assessment_schema(rule: Rule) -> type[BaseModel]:
-    pattern_id = Literal[tuple(p.id for p in rule.patterns)]
+def assessment_schema(rubric: Rubric) -> type[BaseModel]:
+    """One response schema shared by every rule call.
+
+    The schema is part of the cached prompt prefix, so nine rule-specific
+    schemas meant nine separate cache entries and almost no cache hits (the
+    first live run measured this). One schema listing every pattern and
+    modifier id in the rubric keeps the prefix identical across calls. The
+    per-rule restriction moved into Python: score_rule rejects any id that
+    belongs to a different rule and fails closed.
+    """
+    pattern_ids = Literal[tuple(p.id for r in rubric.rules for p in r.patterns)]
+    modifier_ids = Literal[tuple(m.id for r in rubric.rules for m in r.modifiers)]
     match = create_model(
-        f"{rule.id}_match",
-        pattern_id=(pattern_id, ...),
+        "PatternMatch",
+        pattern_id=(pattern_ids, Field(description="A pattern id from the rule being asked about.")),
         clause_ids=(list[str], Field(description="Clause ids the match rests on; empty for an absence.")),
         quote=(str, Field(description="Exact words from one cited clause; empty for an absence.")),
         reason=(str, Field(description="One plain-English sentence.")),
     )
-    fields = {"findings": (list[match], ...)}
-    if rule.modifiers:
-        modifier = create_model(
-            f"{rule.id}_modifier",
-            modifier_id=(Literal[tuple(m.id for m in rule.modifiers)], ...),
-            reason=(str, ...),
-        )
-        fields["triggered_modifiers"] = (list[modifier], ...)
-    return create_model(f"{rule.id}_assessment", **fields)
+    modifier = create_model(
+        "ModifierHit",
+        modifier_id=(modifier_ids, Field(description="A modifier id from the rule being asked about.")),
+        reason=(str, ...),
+    )
+    return create_model(
+        "RuleAssessment",
+        findings=(list[match], ...),
+        triggered_modifiers=(list[modifier], Field(description="Empty if the rule has no modifiers or none apply.")),
+    )
 
 
 class PostureAssessment(BaseModel):
@@ -215,6 +230,14 @@ def score_rule(rule: Rule, assessment, doc: Document, posture: Posture) -> RuleR
     patterns = {p.id: p for p in rule.patterns}
     known_ids = {c.id for c in doc.clauses}
 
+    # The shared schema allows any rubric id, so drop ids from other rules.
+    foreign = [m.pattern_id for m in assessment.findings if m.pattern_id not in patterns]
+    foreign += [h.modifier_id for h in assessment.triggered_modifiers
+                if h.modifier_id not in {m.id for m in rule.modifiers}]
+    assessment.findings = [m for m in assessment.findings if m.pattern_id in patterns]
+    assessment.triggered_modifiers = [h for h in assessment.triggered_modifiers
+                                      if h.modifier_id in {m.id for m in rule.modifiers}]
+
     findings = []
     for m in assessment.findings:
         verified = all(cid in known_ids for cid in m.clause_ids) and quote_is_in(m.quote, m.clause_ids, doc)
@@ -228,14 +251,14 @@ def score_rule(rule: Rule, assessment, doc: Document, posture: Posture) -> RuleR
         ))
 
     if not findings:
-        return RuleResult(
-            rule_id=rule.id, color=Color.YELLOW.value, findings=[],
-            needs_review="No pattern matched and the rubric has no position for that. Counsel should check this rule.",
-        )
+        why = (f"The model answered with ids from another rule ({', '.join(foreign)})." if foreign else
+               "No pattern matched and the rubric has no position for that.")
+        return RuleResult(rule_id=rule.id, color=Color.YELLOW.value, findings=[],
+                          needs_review=f"{why} Counsel should check this rule.")
 
     color = worst(Color(f.color) for f in findings)
     applied = []
-    for hit in getattr(assessment, "triggered_modifiers", []):
+    for hit in assessment.triggered_modifiers:
         modifier = next(m for m in rule.modifiers if m.id == hit.modifier_id)
         if posture in modifier.postures:
             color = bump(color) if modifier.effect == "bump_one_color" else Color.RED
@@ -245,6 +268,9 @@ def score_rule(rule: Rule, assessment, doc: Document, posture: Posture) -> RuleR
     if not all(f.quote_verified for f in findings):
         color = worst([color, Color.YELLOW])
         needs_review = "A cited quote or clause id could not be found in the document."
+    elif foreign:
+        color = worst([color, Color.YELLOW])
+        needs_review = f"The model also named ids from another rule ({', '.join(foreign)}); they were ignored."
 
     return RuleResult(rule_id=rule.id, color=color.value, findings=findings,
                       modifiers_applied=applied, needs_review=needs_review)
@@ -275,29 +301,37 @@ def triage(doc: Document, rubric: Rubric, posture: Posture, party: str, client=N
     doc_block = doc_block_for(doc)
     usages: list[Usage] = []
 
-    # The first call runs alone so it writes the cache; the rule calls that
-    # follow run in parallel and all read it.
-    posture_check = None
-    if rubric.posture_cross_check:
-        try:
-            pa, u = ask(client, doc_block, posture_question(party), PostureAssessment)
-            usages.append(u)
-            posture_check = PostureCheck(stated=posture.value, apparent=pa.apparent_posture,
-                                         consistent=pa.apparent_posture == posture.value, reason=pa.reason)
-        except ClassificationError as e:
-            posture_check = PostureCheck(stated=posture.value, apparent="unclear", consistent=False, reason=str(e))
+    schema = assessment_schema(rubric)
 
     def run(rule: Rule) -> RuleResult:
         try:
-            assessment, u = ask(client, doc_block, rule_question(rule, party), assessment_schema(rule))
+            assessment, u = ask(client, doc_block, rule_question(rule, party), schema)
         except ClassificationError as e:
             return RuleResult(rule_id=rule.id, color=Color.YELLOW.value, findings=[],
                               needs_review=f"Analysis failed: {e}.")
         usages.append(u)
         return score_rule(rule, assessment, doc, posture)
 
+    def check_posture() -> PostureCheck | None:
+        if not rubric.posture_cross_check:
+            return None
+        try:
+            pa, u = ask(client, doc_block, posture_question(party), PostureAssessment)
+        except ClassificationError as e:
+            return PostureCheck(stated=posture.value, apparent="unclear", consistent=False, reason=str(e))
+        usages.append(u)
+        return PostureCheck(stated=posture.value, apparent=pa.apparent_posture,
+                            consistent=pa.apparent_posture == posture.value, reason=pa.reason)
+
+    # The first rule call runs alone so it writes the cache; the other rule
+    # calls then run in parallel and read it. (The posture check uses its own
+    # schema, so it has its own cache entry either way.)
+    first, *rest = rubric.rules
+    results = [run(first)]
     with ThreadPoolExecutor(max_workers=max_workers) as pool:
-        results = list(pool.map(run, rubric.rules))
+        posture_future = pool.submit(check_posture)
+        results += list(pool.map(run, rest))
+        posture_check = posture_future.result()
 
     return TriageResult(
         source_name=doc.source_name,

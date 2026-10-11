@@ -1,0 +1,221 @@
+{
+  "source_name": "sample_nda.txt",
+  "sha256": "d0e4499ee4191af1b4146463ce1a764f285d564b0fc15770b9c2da012492fefe",
+  "posture": "mutual",
+  "party": "Acme Analytics, Inc.",
+  "color": "RED",
+  "rules": [
+    {
+      "rule_id": "mutuality",
+      "color": "GREEN",
+      "findings": [
+        {
+          "pattern_id": "fully_mutual",
+          "clause_ids": [
+            "sec-2.1",
+            "sec-3"
+          ],
+          "quote": "all non-public information disclosed by either party to the other",
+          "reason": "Confidential Information covers what either party discloses, and the use and care obligations in the Obligations clause apply equally to whichever party is the Receiving Party.",
+          "color": "GREEN",
+          "quote_verified": true
+        }
+      ],
+      "modifiers_applied": [],
+      "needs_review": null
+    },
+    {
+      "rule_id": "term",
+      "color": "GREEN",
+      "findings": [
+        {
+          "pattern_id": "term_2_to_3yr",
+          "clause_ids": [
+            "sec-4"
+          ],
+          "quote": "This Agreement continues for two (2) years from the Effective Date.",
+          "reason": "The agreement has a fixed term of two years from the Effective Date.",
+          "color": "GREEN",
+          "quote_verified": true
+        }
+      ],
+      "modifiers_applied": [],
+      "needs_review": null
+    },
+    {
+      "rule_id": "survival",
+      "color": "GREEN",
+      "findings": [
+        {
+          "pattern_id": "survival_2_to_3yr",
+          "clause_ids": [
+            "sec-5"
+          ],
+          "quote": "The Receiving Party's obligations survive for three (3) years after termination.",
+          "reason": "Confidentiality obligations continue for three years after termination, which falls in the 2 to 3 year range.",
+          "color": "GREEN",
+          "quote_verified": true
+        }
+      ],
+      "modifiers_applied": [],
+      "needs_review": null
+    },
+    {
+      "rule_id": "non_solicit",
+      "color": "RED",
+      "findings": [
+        {
+          "pattern_id": "broad_employee_non_solicit",
+          "clause_ids": [
+            "sec-8.3"
+          ],
+          "quote": "neither party will solicit for employment any employee of the other party with whom it had contact under this Agreement",
+          "reason": "The employee non-solicit is limited to employees the party had contact with, but it has no carve-out for general job advertisements.",
+          "color": "RED",
+          "quote_verified": true
+        },
+        {
+          "pattern_id": "long_employee_non_solicit",
+          "clause_ids": [
+            "sec-8.3",
+            "sec-4"
+          ],
+          "quote": "during the term and for twelve (12) months thereafter neither party will solicit for employment any employee of the other party",
+          "reason": "The restriction runs for the whole term (up to two years) plus twelve months afterward, which is more than 12 months in total.",
+          "color": "RED",
+          "quote_verified": true
+        }
+      ],
+      "modifiers_applied": [],
+      "needs_review": null
+    },
+    {
+      "rule_id": "non_compete",
+      "color": "GREEN",
+      "findings": [
+        {
+          "pattern_id": "no_non_compete",
+          "clause_ids": [],
+          "quote": "",
+          "reason": "Nothing in the NDA restricts competing, developing competing products, or acquiring the other party; the only restriction beyond confidentiality is an employee non-solicit, which is outside this rule.",
+          "color": "GREEN",
+          "quote_verified": true
+        }
+      ],
+      "modifiers_applied": [],
+      "needs_review": null
+    },
+    {
+      "rule_id": "ip_assignment",
+      "color": "GREEN",
+      "findings": [
+        {
+          "pattern_id": "express_no_license",
+          "clause_ids": [
+            "sec-6"
+          ],
+          "quote": "Nothing in this Agreement grants either party any license or other right in the other party's Confidential Information.",
+          "reason": "The NDA contains no IP assignment and expressly states that no license or other rights are granted in Confidential Information.",
+          "color": "GREEN",
+          "quote_verified": true
+        }
+      ],
+      "modifiers_applied": [],
+      "needs_review": null
+    },
+    {
+      "rule_id": "residuals",
+      "color": "GREEN",
+      "findings": [
+        {
+          "pattern_id": "no_residuals",
+          "clause_ids": [],
+          "quote": "",
+          "reason": "The NDA contains no clause allowing the recipient to freely use information retained in the unaided memory of its personnel.",
+          "color": "GREEN",
+          "quote_verified": true
+        }
+      ],
+      "modifiers_applied": [],
+      "needs_review": null
+    },
+    {
+      "rule_id": "indemnification",
+      "color": "GREEN",
+      "findings": [
+        {
+          "pattern_id": "no_indemnity",
+          "clause_ids": [],
+          "quote": "",
+          "reason": "The NDA contains no indemnification obligation; the only remedy language is an acknowledgment that injunctive relief may be sought for unauthorized disclosure.",
+          "color": "GREEN",
+          "quote_verified": true
+        }
+      ],
+      "modifiers_applied": [],
+      "needs_review": null
+    },
+    {
+      "rule_id": "ci_definition",
+      "color": "GREEN",
+      "findings": [
+        {
+          "pattern_id": "broad_definition",
+          "clause_ids": [
+            "sec-2.1"
+          ],
+          "quote": "all non-public information disclosed by either party to the other, whether or not marked as confidential",
+          "reason": "The definition covers all non-public information disclosed by either party, whether or not it is marked confidential.",
+          "color": "GREEN",
+          "quote_verified": true
+        }
+      ],
+      "modifiers_applied": [],
+      "needs_review": null
+    }
+  ],
+  "posture_check": {
+    "stated": "mutual",
+    "apparent": "mutual",
+    "consistent": true,
+    "reason": "Confidential Information covers non-public information disclosed by either party, and the use, care, exclusion, survival and non-solicit terms apply to both parties on equal terms."
+  },
+  "usage": {
+    "calls": 13,
+    "input_tokens": 4257,
+    "cache_write_tokens": 5986,
+    "cache_read_tokens": 28104,
+    "output_tokens": 2175,
+    "models": [
+      "claude-sonnet-5-5"
+    ]
+  },
+  "redlines": [
+    {
+      "rule_id": "non_solicit",
+      "pattern_id": "broad_employee_non_solicit",
+      "fallback_id": "non_solicit_strike",
+      "retrieval": "exact",
+      "semantic_top": [
+        "term_3yr_30day_notice",
+        "non_solicit_strike",
+        "mutuality_mutual_obligations"
+      ],
+      "operation": "replace",
+      "clause_id": "sec-8.3",
+      "original_text": "8.3 Cooperation. The parties will cooperate in good faith, and during the term and for twelve (12) months thereafter neither party will solicit for employment any employee of the other party with whom it had contact under this Agreement.",
+      "proposed_text": "8.3 Cooperation. The parties will cooperate in good faith.",
+      "explanation": "Per the playbook fallback, the employee non-solicit (which lacks a general job-ad carve-out) is deleted in its entirety, while the unrelated good-faith cooperation language is kept.",
+      "check": {
+        "resolved": true,
+        "rule_color_after": "GREEN",
+        "faithful": true,
+        "issues": [],
+        "attempts": 1
+      },
+      "status": "passed",
+      "note": null
+    }
+  ],
+  "notice": "Requires attorney review. Not legal advice."
+}

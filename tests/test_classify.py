@@ -57,7 +57,8 @@ class FakeClient:
                                 cache_read_input_tokens=900 if len(self.requests) > 1 else 0, output_tokens=40)
         if m and m.group(1) in self.refuse:
             return SimpleNamespace(parsed_output=None, stop_reason="refusal", usage=usage, model="claude-sonnet-5-5")
-        data = self.answers[m.group(1)] if m else {"apparent_posture": self.posture, "reason": "Both protected."}
+        data = ({"triggered_modifiers": [], **self.answers[m.group(1)]} if m
+                else {"apparent_posture": self.posture, "reason": "Both protected."})
         return SimpleNamespace(parsed_output=kwargs["output_format"].model_validate(data),
                                stop_reason="end_turn", usage=usage, model="claude-sonnet-5-5")
 
@@ -150,6 +151,10 @@ def test_requests_share_a_cacheable_prefix(doc, rubric):
         assert req["system"] == first["system"]
         assert req["messages"][0]["content"][0] == doc_block
         assert req["model"] == "claude-sonnet-5-5"
+    # The response schema is part of the cached prefix, so every rule call
+    # must use the same one (the posture check has its own).
+    rule_schemas = {req["output_format"] for req in client.requests if "<rule id=" in req["messages"][0]["content"][1]["text"]}
+    assert len(rule_schemas) == 1
 
 
 def test_usage_is_totaled(doc, rubric):
@@ -159,10 +164,20 @@ def test_usage_is_totaled(doc, rubric):
     assert result.usage.cache_read_tokens == 900 * 9
 
 
-def test_schema_only_allows_the_rules_own_patterns(rubric):
-    schema = assessment_schema(rubric.rule("residuals"))
+def test_schema_rejects_ids_not_in_the_rubric(rubric):
+    schema = assessment_schema(rubric)
     with pytest.raises(Exception):
-        schema.model_validate({"findings": [{"pattern_id": "fully_mutual", "clause_ids": [], "quote": "", "reason": "x"}]})
+        schema.model_validate({"findings": [{"pattern_id": "made_up", "clause_ids": [], "quote": "", "reason": "x"}],
+                               "triggered_modifiers": []})
+
+
+def test_ids_from_another_rule_are_dropped_and_fail_closed(doc, rubric):
+    answers = dict(SAMPLE_ANSWERS, residuals={"findings": [
+        {"pattern_id": "fully_mutual", "clause_ids": [], "quote": "", "reason": "Wrong rule."}]})
+    result, _ = run(doc, rubric, answers=answers)
+    residuals = rule(result, "residuals")
+    assert residuals.findings == []
+    assert residuals.color == "YELLOW" and "another rule" in residuals.needs_review
 
 
 def test_document_render_tags_every_clause(doc):

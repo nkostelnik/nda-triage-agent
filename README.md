@@ -15,8 +15,8 @@ Licensed under the MIT License (see `LICENSE`).
 | 1 | Playbook rubric (`playbook/rubric.yaml`) | Done |
 | 2 | Ingestion: parse, split into clauses, normalize | Done |
 | 3 | Retrieval (RAG) over playbook fallbacks | Done |
-| 4 | Reasoning: Claude structured output + Pydantic validation | Built; offline tests pass, live run pending |
-| 5 | Agent loop: retrieve, draft redline, self-check | Built; offline tests pass, live run pending |
+| 4 | Reasoning: Claude structured output + Pydantic validation | Done; run live on the sample (see Live results) |
+| 5 | Agent loop: retrieve, draft redline, self-check | Done; run live on the sample (see Live results) |
 | 6 | Eval harness | Not started |
 | 7 | CLI | Not started |
 
@@ -97,7 +97,7 @@ Try it:
 
 - **One call per rule, not per clause.** Several playbook positions are about what's *missing*: no termination right, no trade-secret carve-out, missing exclusions. A call that sees one clause at a time can't notice an absence. A call that reads the whole NDA for one rule can. The cost is sending the NDA ten times. Prompt caching handles that: the system prompt and the document form an identical prefix on every call. The first call runs alone to write the cache, and the nine rule calls then run in parallel and read it at about a tenth of the input price. Token use and estimated cost are reported on every run.
 - **The model finds facts; the rubric decides colors.** The model isn't told the posture. It reports which of the rule's patterns the NDA matches, citing clause ids and verbatim quotes. Python then looks up each pattern's color for the stated posture, applies modifiers, and takes the worst color. The risk call is deterministic, auditable, and testable without the API.
-- **Structured output, validated by Pydantic.** Each call's response schema is built from that rule's pattern ids, so the model can only name patterns that exist. The SDK validates the response against the Pydantic model. Forcing a particular tool call isn't supported on this model, so structured outputs are the supported way to force JSON.
+- **Structured output, validated by Pydantic.** The response schema lists every pattern id in the rubric, so the model can only name patterns that exist, and the SDK validates the response against the Pydantic model. All rule calls share one schema so they share one cache entry (see Live results); Python rejects any id that belongs to a different rule and fails closed. Forcing a particular tool call isn't supported on this model, so structured outputs are the supported way to force JSON.
 - **Verification.** Every cited clause id must exist, and every quote must appear in the cited clause. A finding that fails either check is marked `quote_verified: false`, and its rule can't be GREEN.
 - **Fail closed.** If a rule can't be resolved (nothing matched and the rubric has no position for that, a citation didn't verify, or the model declined), the rule is YELLOW with a `needs_review` note. It is never silently GREEN.
 - **Refusal fallback.** Requests opt into the API's server-side fallback (`fallbacks: "default"`). If the model declines a request, the API retries it on a fallback model. Every model that served a call is listed in the output's usage.
@@ -133,3 +133,34 @@ Run it (requires `ANTHROPIC_API_KEY`):
 ```bash
 .venv/Scripts/python -m nda_triage.agent samples/sample_nda.txt --posture mutual --party "Acme Analytics, Inc."
 ```
+
+## Live results
+
+The sample NDA was run end to end against the real API (`claude-sonnet-5-5`, mutual posture, client "Acme Analytics, Inc."). The full output is in `docs/sample_run.json`. This is one synthetic document, not an evaluation; Stage 6 is where accuracy gets measured.
+
+**What it found.** The NDA was RED overall. Eight rules were GREEN and one was RED: the employee non-solicit hidden in section 8.3 ("Cooperation"), under the miscellaneous provisions. Every quote verified against the source text, and the posture cross-check agreed the NDA is mutual.
+
+The model read the clause more precisely than the test fixture I'd written for it. The fixture called it a *narrow* non-solicit. The model reported two patterns instead: *broad*, because the clause has no carve-out for general job advertisements, and *long*, because "during the term and for twelve (12) months thereafter" can exceed 12 months when combined with the two-year term in section 4. Both readings are correct under the rubric.
+
+**The redline.** The playbook fallback for a non-solicit is "strike." The agent removed only the restriction and kept the harmless covenant, and the draft passed both checks on the first attempt:
+
+> **Before:** 8.3 Cooperation. The parties will cooperate in good faith, and during the term and for twelve (12) months thereafter neither party will solicit for employment any employee of the other party with whom it had contact under this Agreement.
+>
+> **After:** 8.3 Cooperation. The parties will cooperate in good faith.
+
+Re-reviewing the revised NDA returned GREEN for the non-solicit rule, and the fidelity check found nothing added. Retrieval came from exact rubric lookup. Unfiltered vector search, recorded alongside it, again ranked the *term* fallback first for this clause, as Stage 3 predicted. This is why the agent doesn't rely on unfiltered similarity.
+
+**Two bugs the first live run exposed, both fixed:**
+
+| | First run | After fixes |
+|---|---|---|
+| Calls | 16 | 13 |
+| Cache writes / reads (tokens) | 29,301 / 2,272 | 5,986 / 28,104 |
+| Estimated cost | $0.11 | $0.05 |
+| Wall time | 42 s | 16 s |
+| Redlines | 2 (identical) | 1 |
+
+1. **Caching barely worked.** Each rule call had its own response schema, and the schema is part of the cached prompt prefix, so the nine calls created nine separate cache entries instead of sharing one. The fix was a single schema shared by every rule call, with the per-rule check moved into Python. The offline tests couldn't catch this; only real token counts could. A test now asserts that all rule calls send the same schema.
+2. **Duplicate redlines.** The model correctly flagged the clause under two patterns, and the agent drafted the same fix twice. Redlines are now deduplicated per rule, fallback, and clause. The re-review still checks every flag on that clause.
+
+Verdicts were identical across both runs.

@@ -181,11 +181,11 @@ def apply_draft(doc: Document, draft: Draft) -> Document:
 # 3. Check
 # ---------------------------------------------------------------------------
 
-def recheck(client, rule: Rule, finding: Finding, draft: Draft, doc: Document, posture: Posture,
+def recheck(client, rubric: Rubric, rule: Rule, finding: Finding, draft: Draft, doc: Document, posture: Posture,
             party: str) -> tuple[RuleResult, bool, Usage]:
     """Run the Stage 4 classifier for this rule on the revised document."""
     revised = apply_draft(doc, draft)
-    assessment, usage = ask(client, doc_block_for(revised), rule_question(rule, party), assessment_schema(rule))
+    assessment, usage = ask(client, doc_block_for(revised), rule_question(rule, party), assessment_schema(rubric))
     after = score_rule(rule, assessment, revised, posture)
     target = "inserted" if draft.operation == "insert" else draft.clause_id
     still_flagged = [
@@ -227,7 +227,7 @@ def redline(client, rubric: Rubric, retriever, rule: Rule, finding: Finding, doc
             usages.append(u)
             issues = structural_problems(draft, finding, doc)
             if not issues:
-                after, resolved, u = recheck(client, rule, finding, draft, doc, posture, party)
+                after, resolved, u = recheck(client, rubric, rule, finding, draft, doc, posture, party)
                 usages.append(u)
                 color_after = after.color
                 if not resolved:
@@ -267,11 +267,17 @@ def review(doc: Document, rubric: Rubric, posture: Posture, party: str, client=N
     retriever = retriever or Retriever(rubric)
     result = triage(doc, rubric, posture, party, client=client)
 
+    # One redline per (rule, fallback, clause). Two findings about the same
+    # clause that the same fallback fixes (e.g. a non-solicit that is both
+    # too broad and too long) get one redline, not two identical ones. The
+    # re-review still checks every flag on that clause.
     jobs, seen = [], set()
     for rule_result in result.rules:
         rule = rubric.rule(rule_result.rule_id)
         for finding in flagged_findings(rule_result):
-            key = (rule.id, finding.pattern_id, tuple(finding.clause_ids))
+            exact = lookup_fallbacks(rubric, rule.id, finding.pattern_id, posture)
+            key = (rule.id, exact[0].id if exact else finding.pattern_id,
+                   finding.clause_ids[0] if finding.clause_ids else None)
             if key not in seen:
                 seen.add(key)
                 jobs.append((rule, finding))
