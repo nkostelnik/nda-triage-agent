@@ -196,3 +196,11 @@ The first classification-only pass (140 calls, about $0.50) got every verdict ri
 - **Redlines were not part of this pass.**
 
 The eval is in place and it works. The next step is making it harder (see the roadmap below).
+
+## Roadmap
+
+- **Harder eval set:** longer NDAs; issues hidden in defined terms, cross-references, and "notwithstanding" overrides; several issues interacting; ideally some cases written by someone other than the rubric's author.
+- **Run-to-run variance:** run each case several times and report how often verdicts change.
+- **Redline evals:** score drafted redlines against attorney-approved answers, not only the self-check.
+- **Stage 7:** `triage.py` CLI with a markdown report and a JSON file.
+- **PDF intake.**
