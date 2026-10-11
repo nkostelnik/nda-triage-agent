@@ -1,6 +1,6 @@
 {
-  "status": "proposed",
-  "note": "Proposed by Claude from the rubric and each document's design. Not ground truth until the attorney confirms them; run_evals.py refuses to score proposed labels unless --allow-proposed is passed.",
+  "status": "confirmed",
+  "note": "Expected verdicts confirmed by the attorney on 2026-10-10 for cases 01-13. Case 14 was left unanswered in the review form and remains as proposed (listed in unconfirmed_cases).",
   "cases": [
     {
       "id": "01_clean_mutual",
@@ -310,5 +310,8 @@
         "posture_consistent": true
       }
     }
+  ],
+  "unconfirmed_cases": [
+    "14_discloser_with_carveout"
   ]
 }

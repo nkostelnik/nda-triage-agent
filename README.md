@@ -17,7 +17,7 @@ Licensed under the MIT License (see `LICENSE`).
 | 3 | Retrieval (RAG) over playbook fallbacks | Done |
 | 4 | Reasoning: Claude structured output + Pydantic validation | Done; run live on the sample (see Live results) |
 | 5 | Agent loop: retrieve, draft redline, self-check | Done; run live on the sample (see Live results) |
-| 6 | Eval harness | Not started |
+| 6 | Eval harness | Done; first pass 14/14 on an easy set (see Stage 6) |
 | 7 | CLI | Not started |
 
 ## Setup
@@ -164,3 +164,35 @@ Re-reviewing the revised NDA returned GREEN for the non-solicit rule, and the fi
 2. **Duplicate redlines.** The model correctly flagged the clause under two patterns, and the agent drafted the same fix twice. Redlines are now deduplicated per rule, fallback, and clause. The re-review still checks every flag on that clause.
 
 Verdicts were identical across both runs.
+
+## Stage 6: evals
+
+`evals/` holds 14 synthetic NDAs, the attorney's expected verdicts (`labels.json`), and a runner (`run_evals.py`). The set has 4 GREEN controls, 2 YELLOW, and 8 RED across all three postures. Each NDA tests something specific:
+
+- **Traps the model has to read past:** a no-hire buried in Miscellaneous under "Personnel"; a non-compete phrased as a "use restriction" on developing similar products; an NDA titled "mutual" that protects only one side; an 18-month standstill in an M&A agreement.
+- **Issues created by something missing:** no fixed term and no termination right; a missing independent-development exclusion.
+- **Over-escalation traps:** clauses that sound alarming but are GREEN for the stated posture (broad residuals for a recipient; perpetual survival, a feedback clause, and an indemnity running *to* us for a discloser).
+- **Paired cases:** a discloser's fixed survival period is RED without a trade-secret carve-out (case 03) and YELLOW with one (case 14).
+- **Two Word files**, built by `evals/build_docx.py`: one with heading styles, one with Word's automatic numbering.
+
+The labels are the attorney's, not the tool's. The runner refuses to score against `labels.json` until its status is `confirmed`. Case 14 was left unanswered in the review form, so it's still listed as unconfirmed.
+
+The runner reports overall and per-rule accuracy, **false GREENs** (the dangerous error: the attorney expected YELLOW or RED and the tool said GREEN), under-calls, over-escalations (the cost side, which wastes counsel's time), posture-check accuracy, unverified quotes, and, with `--redlines`, redline pass rate and retrieval agreement. Every miss is written to `disagreements.jsonl` with the model's findings and reasons.
+
+```bash
+.venv/Scripts/python evals/run_evals.py              # classification only
+.venv/Scripts/python evals/run_evals.py --redlines   # also draft and check redlines
+```
+
+### First full run: 14/14, and why that is not the headline
+
+The first classification-only pass (140 calls, about $0.50) got every verdict right: 14 of 14 overall and 126 of 126 rule verdicts, with zero false GREENs, zero over-escalations, a correct posture check on all 14 (including the warning on the fake mutual NDA), and no unverified quotes. Full results are in `evals/RESULTS.md`. The colors were also right for the right reasons: the patterns and clauses the model cited match what each document was built to test. Caching held across the run (306K tokens read from cache vs. 62K written).
+
+**A perfect score means this eval set is too easy to tell good from great.** Honest reasons:
+
+- **The same author wrote the rubric and the test NDAs.** Each document isolates one or two issues in clean, unambiguous language. Real NDAs are longer, messier, and drafted by someone trying to win.
+- **One run per document.** Model output varies from run to run, and a single pass doesn't measure that.
+- **No hard cases yet:** issues split across defined terms and cross-references, clauses that override each other ("notwithstanding Section 4..."), several problems interacting in one section, or 10-page documents.
+- **Redlines were not part of this pass.**
+
+The eval is in place and it works. The next step is making it harder (see the roadmap below).

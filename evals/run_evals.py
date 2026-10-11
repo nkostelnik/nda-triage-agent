@@ -132,7 +132,8 @@ def disagreements(case: dict, score: dict, result: TriageResult) -> list[dict]:
     return rows
 
 
-def summary_markdown(agg: dict, scores: list[dict], usage, run_id: str, with_redlines: bool, label_status: str) -> str:
+def summary_markdown(agg: dict, scores: list[dict], usage, run_id: str, with_redlines: bool, label_status: str,
+                     unconfirmed: tuple = ()) -> str:
     pct = lambda x: "n/a" if x is None else f"{x:.0%}"  # noqa: E731
     lines = [
         f"# Eval results ({run_id})",
@@ -140,6 +141,7 @@ def summary_markdown(agg: dict, scores: list[dict], usage, run_id: str, with_red
         f"Labels: **{label_status}**. Mode: {'classification + redlines' if with_redlines else 'classification only'}. "
         f"{agg['cases']} synthetic NDAs, {agg['rule_cells']} rule verdicts.",
         "",
+        *([f"Labels not yet confirmed by the attorney: {', '.join(unconfirmed)}.", ""] if unconfirmed else []),
         "| Metric | Result |",
         "|---|---|",
         f"| Overall verdict accuracy | {pct(agg['overall_accuracy'])} ({agg['overall'].get('match', 0)}/{agg['cases']}) |",
@@ -211,7 +213,8 @@ def main() -> None:
 
     usage = total(usages)
     agg = aggregate(scores)
-    summary = summary_markdown(agg, scores, usage, run_id, args.redlines, labels["status"])
+    summary = summary_markdown(agg, scores, usage, run_id, args.redlines, labels["status"],
+                               tuple(labels.get("unconfirmed_cases", [])))
     (out_dir / "results.json").write_text(json.dumps({"aggregate": agg, "scores": scores, "results": raw}, indent=2),
                                           encoding="utf-8")
     (out_dir / "summary.md").write_text(summary, encoding="utf-8")
