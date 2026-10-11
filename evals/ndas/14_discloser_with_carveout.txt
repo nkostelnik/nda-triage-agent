@@ -1,0 +1,24 @@
+NONDISCLOSURE AGREEMENT
+
+[SYNTHETIC TEST DOCUMENT. Fictional parties. Not a real agreement.]
+
+This Nondisclosure Agreement (the "Agreement") is entered into as of July 20, 2026 (the "Effective Date") by Fairhaven Materials Corp. ("Fairhaven") and Ironvale Fabrication LLC ("Ironvale"). Fairhaven will disclose information about its composite formulations so that Ironvale can quote manufacturing services (the "Purpose").
+
+1. Confidential Information. "Confidential Information" means all non-public information that Fairhaven discloses to Ironvale in connection with the Purpose, whether or not marked as confidential.
+
+2. Exclusions. Confidential Information does not include information that (a) is or becomes public through no fault of Ironvale; (b) was known to Ironvale before disclosure; (c) is received from a third party without restriction; or (d) is independently developed by Ironvale without use of Confidential Information.
+
+3. Obligations. Ironvale shall use Confidential Information only for the Purpose and protect it with reasonable care.
+
+4. Term. This Agreement continues for two (2) years from the Effective Date. Either party may terminate it on thirty (30) days' written notice.
+
+5. Survival. Ironvale's obligations survive for three (3) years after termination or expiration; provided that, for any Confidential Information that is a trade secret under applicable law, those obligations continue for as long as it remains a trade secret.
+
+6. No License. Nothing in this Agreement grants Ironvale any license or other right in Fairhaven's Confidential Information or intellectual property.
+
+7. Governing Law. This Agreement is governed by the laws of the State of Ohio.
+
+IN WITNESS WHEREOF, the parties have executed this Agreement as of the Effective Date.
+
+FAIRHAVEN MATERIALS CORP.       IRONVALE FABRICATION LLC
+By: ____________________        By: ____________________

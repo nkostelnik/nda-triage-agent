@@ -1,0 +1,31 @@
+CONFIDENTIALITY AGREEMENT
+
+[SYNTHETIC TEST DOCUMENT. Fictional parties. Not a real agreement.]
+
+This Confidentiality Agreement (the "Agreement") is entered into as of May 4, 2026 (the "Effective Date") by Pembrook Industrial Holdings, Inc. (the "Company") and Lockhart Capital Partners LP ("Lockhart"). The Company will provide information to Lockhart so that Lockhart can evaluate a possible acquisition of the Company (the "Transaction").
+
+# Evaluation Material
+"Evaluation Material" means all non-public information that the Company or its representatives furnish to Lockhart in connection with the Transaction, whether or not marked as confidential.
+
+# Exclusions
+Evaluation Material does not include information that (a) is or becomes public other than through Lockhart's breach; (b) was available to Lockhart on a non-confidential basis before disclosure; (c) becomes available to Lockhart from a source not bound by a confidentiality obligation; or (d) is independently developed by Lockhart without use of Evaluation Material.
+
+# Use and Confidentiality
+Lockhart shall use Evaluation Material solely to evaluate the Transaction and keep it confidential.
+
+# Standstill
+For eighteen (18) months after the Effective Date, unless invited in writing by the Company's board of directors, Lockhart shall not acquire or offer to acquire any securities or material assets of the Company, propose any merger or business combination involving the Company, or solicit proxies with respect to the Company's securities.
+
+# Term
+This Agreement continues for two (2) years from the Effective Date. Either party may terminate it on thirty (30) days' written notice, except that the Standstill section survives for its stated period.
+
+# Survival
+Lockhart's confidentiality obligations survive for two (2) years after termination or expiration.
+
+# No License
+Nothing in this Agreement grants Lockhart any license or other right in the Evaluation Material.
+
+# Governing Law
+This Agreement is governed by the laws of the State of Delaware.
+
+IN WITNESS WHEREOF, the parties have executed this Agreement as of the Effective Date.

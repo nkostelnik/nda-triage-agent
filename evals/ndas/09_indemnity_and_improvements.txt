@@ -1,0 +1,26 @@
+MUTUAL NONDISCLOSURE AGREEMENT
+
+[SYNTHETIC TEST DOCUMENT. Fictional parties. Not a real agreement.]
+
+This Mutual Nondisclosure Agreement (the "Agreement") is dated February 9, 2026 (the "Effective Date") and is between Redfern Instruments Corp. ("Redfern") and Copperline Systems, Inc. ("Copperline") for the purpose of evaluating a joint sensor development project (the "Purpose").
+
+1. Confidential Information. "Confidential Information" means all non-public information disclosed by either party (the "Disclosing Party") to the other (the "Receiving Party"), whether or not marked as confidential.
+
+2. Exclusions. Confidential Information does not include information that (a) is or becomes public through no fault of the Receiving Party; (b) was known to the Receiving Party before disclosure; (c) is received from a third party without restriction; or (d) is independently developed by the Receiving Party without use of the Disclosing Party's Confidential Information.
+
+3. Obligations. The Receiving Party shall use Confidential Information solely for the Purpose and protect it with reasonable care.
+
+4. Improvements. Any improvement, modification, or derivative work of a party's Confidential Information that is made by the other party shall be owned exclusively by the Disclosing Party, and the Receiving Party hereby assigns all rights in it to the Disclosing Party.
+
+5. Indemnification. Each party shall indemnify, defend, and hold harmless the other party from all losses, damages, and expenses, including reasonable attorneys' fees, arising out of its breach of this Agreement.
+
+6. Term. This Agreement continues for three (3) years from the Effective Date. Either party may terminate it on thirty (30) days' written notice.
+
+7. Survival. Obligations survive for three (3) years after termination or expiration.
+
+8. Governing Law. This Agreement is governed by the laws of the State of Texas.
+
+IN WITNESS WHEREOF, the parties have executed this Agreement as of the Effective Date.
+
+REDFERN INSTRUMENTS CORP.       COPPERLINE SYSTEMS, INC.
+By: ____________________        By: ____________________

@@ -1,0 +1,24 @@
+CONFIDENTIALITY AGREEMENT
+
+[SYNTHETIC TEST DOCUMENT. Fictional parties. Not a real agreement.]
+
+This Confidentiality Agreement (the "Agreement") is dated June 1, 2026 (the "Effective Date") between Brightwater Biologics, Inc. ("Brightwater") and Kestrel Analytics LLC ("Kestrel"). Brightwater will provide Kestrel with assay data so that Kestrel can propose analytics services (the "Purpose").
+
+Section 1. Definition. "Confidential Information" means information Brightwater discloses to Kestrel that is marked or designated as confidential in writing at the time of disclosure. Information disclosed orally is Confidential Information only if Brightwater confirms its confidential nature in writing within fifteen (15) days after disclosure.
+
+Section 2. Exclusions. Confidential Information excludes information that (a) is publicly available through no fault of Kestrel; (b) was already known to Kestrel without restriction; (c) is received by Kestrel from a third party not under a duty of confidentiality; or (d) is independently developed by Kestrel without use of Confidential Information.
+
+Section 3. Use and Protection. Kestrel shall use Confidential Information only for the Purpose and shall not disclose it to any third party other than its employees who need to know it for the Purpose.
+
+Section 4. Term. This Agreement will remain in effect for one (1) year from the Effective Date, unless either party terminates it earlier on thirty (30) days' written notice.
+
+Section 5. Duration of Obligations. Kestrel's confidentiality obligations will continue for two (2) years after this Agreement expires or is terminated.
+
+Section 6. No Rights Granted. This Agreement does not grant Kestrel any license or other right in Brightwater's Confidential Information or intellectual property.
+
+Section 7. Governing Law. This Agreement is governed by the laws of the Commonwealth of Massachusetts.
+
+IN WITNESS WHEREOF, the parties have executed this Agreement as of the Effective Date.
+
+BRIGHTWATER BIOLOGICS, INC.     KESTREL ANALYTICS LLC
+By: ____________________        By: ____________________

@@ -1,0 +1,26 @@
+NON-DISCLOSURE AGREEMENT
+
+[SYNTHETIC TEST DOCUMENT. Fictional parties. Not a real agreement.]
+
+This Non-Disclosure Agreement (the "Agreement") is entered into as of May 11, 2026 (the "Effective Date") by Vantage Freight Systems, Inc. ("Discloser") and Northfield Logistics Corp. ("Recipient"). Discloser intends to share information about its routing software so that Recipient may evaluate a possible license (the "Purpose").
+
+1. Confidential Information. "Confidential Information" means information disclosed by Discloser to Recipient that is marked "Confidential" at the time of disclosure or, if disclosed orally, is identified as confidential at the time of disclosure and summarized in a writing marked "Confidential" delivered to Recipient within thirty (30) days.
+
+2. Exclusions. Confidential Information does not include information that Recipient can show (a) is or becomes public through no fault of Recipient; (b) was known to Recipient before disclosure; (c) was received from a third party without a duty of confidentiality; or (d) was independently developed by Recipient without use of Confidential Information.
+
+3. Recipient's Obligations. Recipient shall use Confidential Information solely for the Purpose and shall protect it using the same degree of care it uses for its own information of like kind, but no less than reasonable care.
+
+4. Term. This Agreement continues for two (2) years from the Effective Date. Either party may terminate this Agreement upon thirty (30) days' written notice.
+
+5. Survival. Recipient's obligations survive for five (5) years after termination or expiration.
+
+6. Ownership; No License. All Confidential Information remains the property of Discloser. No license or other right in Confidential Information is granted to Recipient, except the right to use it for the Purpose.
+
+7. Return of Materials. On Discloser's written request, Recipient shall return or destroy Confidential Information.
+
+8. Governing Law. This Agreement is governed by the laws of the State of New York.
+
+IN WITNESS WHEREOF, the parties have executed this Agreement as of the Effective Date.
+
+VANTAGE FREIGHT SYSTEMS, INC.   NORTHFIELD LOGISTICS CORP.
+By: ____________________        By: ____________________

@@ -1,0 +1,314 @@
+{
+  "status": "proposed",
+  "note": "Proposed by Claude from the rubric and each document's design. Not ground truth until the attorney confirms them; run_evals.py refuses to score proposed labels unless --allow-proposed is passed.",
+  "cases": [
+    {
+      "id": "01_clean_mutual",
+      "file": "ndas/01_clean_mutual.txt",
+      "posture": "mutual",
+      "party": "Harbor Lane Software, Inc.",
+      "tests": "Control: a clean mutual NDA that should pass. Catches over-escalation.",
+      "expected": {
+        "overall": "GREEN",
+        "rules": {
+          "mutuality": "GREEN",
+          "term": "GREEN",
+          "survival": "GREEN",
+          "non_solicit": "GREEN",
+          "non_compete": "GREEN",
+          "ip_assignment": "GREEN",
+          "residuals": "GREEN",
+          "indemnification": "GREEN",
+          "ci_definition": "GREEN"
+        },
+        "posture_consistent": true
+      }
+    },
+    {
+      "id": "02_one_way_recipient",
+      "file": "ndas/02_one_way_recipient.txt",
+      "posture": "recipient",
+      "party": "Northfield Logistics Corp.",
+      "tests": "Control: one-way NDA protecting the other side, read as the recipient. Marking requirement and one-way structure are fine for a recipient.",
+      "expected": {
+        "overall": "GREEN",
+        "rules": {
+          "mutuality": "GREEN",
+          "term": "GREEN",
+          "survival": "GREEN",
+          "non_solicit": "GREEN",
+          "non_compete": "GREEN",
+          "ip_assignment": "GREEN",
+          "residuals": "GREEN",
+          "indemnification": "GREEN",
+          "ci_definition": "GREEN"
+        },
+        "posture_consistent": true
+      }
+    },
+    {
+      "id": "03_discloser_short_terms",
+      "file": "ndas/03_discloser_short_terms.txt",
+      "posture": "discloser",
+      "party": "Brightwater Biologics, Inc.",
+      "tests": "Discloser posture: 1-year term, 2-year survival with no trade-secret carve-out (modifier makes it RED), marking requirement.",
+      "expected": {
+        "overall": "RED",
+        "rules": {
+          "mutuality": "GREEN",
+          "term": "YELLOW",
+          "survival": "RED",
+          "non_solicit": "GREEN",
+          "non_compete": "GREEN",
+          "ip_assignment": "GREEN",
+          "residuals": "GREEN",
+          "indemnification": "GREEN",
+          "ci_definition": "RED"
+        },
+        "posture_consistent": true
+      }
+    },
+    {
+      "id": "04_buried_no_hire",
+      "file": "ndas/04_buried_no_hire.txt",
+      "posture": "mutual",
+      "party": "Cobalt Ridge Partners LP",
+      "tests": "Trap: a no-hire clause buried in Miscellaneous under the heading 'Personnel'.",
+      "expected": {
+        "overall": "RED",
+        "rules": {
+          "mutuality": "GREEN",
+          "term": "GREEN",
+          "survival": "GREEN",
+          "non_solicit": "RED",
+          "non_compete": "GREEN",
+          "ip_assignment": "GREEN",
+          "residuals": "GREEN",
+          "indemnification": "GREEN",
+          "ci_definition": "GREEN"
+        },
+        "posture_consistent": true
+      }
+    },
+    {
+      "id": "05_disguised_non_compete",
+      "file": "ndas/05_disguised_non_compete.docx",
+      "posture": "mutual",
+      "party": "Aldergrove Robotics Inc.",
+      "tests": "Trap: a non-compete phrased as a 'use restriction' on developing similar products. Word file with heading styles.",
+      "expected": {
+        "overall": "RED",
+        "rules": {
+          "mutuality": "GREEN",
+          "term": "GREEN",
+          "survival": "GREEN",
+          "non_solicit": "GREEN",
+          "non_compete": "RED",
+          "ip_assignment": "GREEN",
+          "residuals": "GREEN",
+          "indemnification": "GREEN",
+          "ci_definition": "GREEN"
+        },
+        "posture_consistent": true
+      }
+    },
+    {
+      "id": "06_fake_mutual",
+      "file": "ndas/06_fake_mutual.txt",
+      "posture": "mutual",
+      "party": "Ostrander Media Group LLC",
+      "tests": "Trap: titled and described as mutual, but only the other side's information is protected without marking. Posture check should warn.",
+      "expected": {
+        "overall": "RED",
+        "rules": {
+          "mutuality": "RED",
+          "term": "GREEN",
+          "survival": "GREEN",
+          "non_solicit": "GREEN",
+          "non_compete": "GREEN",
+          "ip_assignment": "GREEN",
+          "residuals": "GREEN",
+          "indemnification": "GREEN",
+          "ci_definition": "RED"
+        },
+        "posture_consistent": false
+      }
+    },
+    {
+      "id": "07_residuals_recipient",
+      "file": "ndas/07_residuals_recipient.txt",
+      "posture": "recipient",
+      "party": "Tidewell Consulting LLC",
+      "tests": "Over-escalation trap: a broad residuals clause, which helps a recipient. Should stay GREEN.",
+      "expected": {
+        "overall": "GREEN",
+        "rules": {
+          "mutuality": "GREEN",
+          "term": "GREEN",
+          "survival": "GREEN",
+          "non_solicit": "GREEN",
+          "non_compete": "GREEN",
+          "ip_assignment": "GREEN",
+          "residuals": "GREEN",
+          "indemnification": "GREEN",
+          "ci_definition": "GREEN"
+        },
+        "posture_consistent": true
+      }
+    },
+    {
+      "id": "08_residuals_mutual",
+      "file": "ndas/08_residuals_mutual.txt",
+      "posture": "mutual",
+      "party": "Granite Peak Media, Inc.",
+      "tests": "Narrow residuals clause in a mutual NDA (RED for mutual even when narrowed).",
+      "expected": {
+        "overall": "RED",
+        "rules": {
+          "mutuality": "GREEN",
+          "term": "GREEN",
+          "survival": "GREEN",
+          "non_solicit": "GREEN",
+          "non_compete": "GREEN",
+          "ip_assignment": "GREEN",
+          "residuals": "RED",
+          "indemnification": "GREEN",
+          "ci_definition": "GREEN"
+        },
+        "posture_consistent": true
+      }
+    },
+    {
+      "id": "09_indemnity_and_improvements",
+      "file": "ndas/09_indemnity_and_improvements.txt",
+      "posture": "mutual",
+      "party": "Redfern Instruments Corp.",
+      "tests": "Mutual indemnity plus assignment of improvements to the disclosing party.",
+      "expected": {
+        "overall": "RED",
+        "rules": {
+          "mutuality": "GREEN",
+          "term": "GREEN",
+          "survival": "GREEN",
+          "non_solicit": "GREEN",
+          "non_compete": "GREEN",
+          "ip_assignment": "YELLOW",
+          "residuals": "GREEN",
+          "indemnification": "RED",
+          "ci_definition": "GREEN"
+        },
+        "posture_consistent": true
+      }
+    },
+    {
+      "id": "10_evergreen_no_exit",
+      "file": "ndas/10_evergreen_no_exit.txt",
+      "posture": "mutual",
+      "party": "Sablewood Energy LLC",
+      "tests": "Trap by absence: no fixed term and no termination right (modifier bumps YELLOW to RED). Perpetual survival is fine for mutual.",
+      "expected": {
+        "overall": "RED",
+        "rules": {
+          "mutuality": "GREEN",
+          "term": "RED",
+          "survival": "GREEN",
+          "non_solicit": "GREEN",
+          "non_compete": "GREEN",
+          "ip_assignment": "GREEN",
+          "residuals": "GREEN",
+          "indemnification": "GREEN",
+          "ci_definition": "GREEN"
+        },
+        "posture_consistent": true
+      }
+    },
+    {
+      "id": "11_missing_exclusion",
+      "file": "ndas/11_missing_exclusion.txt",
+      "posture": "recipient",
+      "party": "Wexford Clinical Research Inc.",
+      "tests": "Trap by absence: the independent-development exclusion is missing. NDA is silent on IP, which is fine for a recipient.",
+      "expected": {
+        "overall": "YELLOW",
+        "rules": {
+          "mutuality": "GREEN",
+          "term": "GREEN",
+          "survival": "GREEN",
+          "non_solicit": "GREEN",
+          "non_compete": "GREEN",
+          "ip_assignment": "GREEN",
+          "residuals": "GREEN",
+          "indemnification": "GREEN",
+          "ci_definition": "YELLOW"
+        },
+        "posture_consistent": true
+      }
+    },
+    {
+      "id": "12_standstill",
+      "file": "ndas/12_standstill.docx",
+      "posture": "recipient",
+      "party": "Lockhart Capital Partners LP",
+      "tests": "M&A confidentiality agreement with an 18-month standstill. Word file with automatic numbering.",
+      "expected": {
+        "overall": "RED",
+        "rules": {
+          "mutuality": "GREEN",
+          "term": "GREEN",
+          "survival": "GREEN",
+          "non_solicit": "GREEN",
+          "non_compete": "RED",
+          "ip_assignment": "GREEN",
+          "residuals": "GREEN",
+          "indemnification": "GREEN",
+          "ci_definition": "GREEN"
+        },
+        "posture_consistent": true
+      }
+    },
+    {
+      "id": "13_scary_but_green",
+      "file": "ndas/13_scary_but_green.txt",
+      "posture": "discloser",
+      "party": "Quarry Hill Genomics, Inc.",
+      "tests": "Over-escalation trap for a discloser: perpetual survival, a feedback clause, and an indemnity running to us. All GREEN.",
+      "expected": {
+        "overall": "GREEN",
+        "rules": {
+          "mutuality": "GREEN",
+          "term": "GREEN",
+          "survival": "GREEN",
+          "non_solicit": "GREEN",
+          "non_compete": "GREEN",
+          "ip_assignment": "GREEN",
+          "residuals": "GREEN",
+          "indemnification": "GREEN",
+          "ci_definition": "GREEN"
+        },
+        "posture_consistent": true
+      }
+    },
+    {
+      "id": "14_discloser_with_carveout",
+      "file": "ndas/14_discloser_with_carveout.txt",
+      "posture": "discloser",
+      "party": "Fairhaven Materials Corp.",
+      "tests": "Pair with 03: fixed survival WITH a trade-secret carve-out stays YELLOW instead of RED.",
+      "expected": {
+        "overall": "YELLOW",
+        "rules": {
+          "mutuality": "GREEN",
+          "term": "GREEN",
+          "survival": "YELLOW",
+          "non_solicit": "GREEN",
+          "non_compete": "GREEN",
+          "ip_assignment": "GREEN",
+          "residuals": "GREEN",
+          "indemnification": "GREEN",
+          "ci_definition": "GREEN"
+        },
+        "posture_consistent": true
+      }
+    }
+  ]
+}

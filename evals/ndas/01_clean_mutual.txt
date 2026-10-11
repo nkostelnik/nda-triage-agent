@@ -1,0 +1,28 @@
+MUTUAL CONFIDENTIALITY AGREEMENT
+
+[SYNTHETIC TEST DOCUMENT. Fictional parties. Not a real agreement.]
+
+This Mutual Confidentiality Agreement (the "Agreement") is made as of April 2, 2026 (the "Effective Date") between Harbor Lane Software, Inc., a Delaware corporation ("Harbor Lane"), and Quill Data LLC, an Ohio limited liability company ("Quill"). The parties wish to discuss a possible data integration partnership (the "Purpose").
+
+1. Confidential Information. "Confidential Information" means any non-public information disclosed by either party (the "Disclosing Party") to the other party (the "Receiving Party") in connection with the Purpose, in any form, whether or not marked as confidential, that a reasonable person would understand to be confidential.
+
+2. Exclusions. Confidential Information does not include information that (a) is or becomes publicly available through no fault of the Receiving Party; (b) was known to the Receiving Party without restriction before disclosure; (c) is rightfully received from a third party without a duty of confidentiality; or (d) is independently developed by the Receiving Party without use of the Disclosing Party's Confidential Information.
+
+3. Obligations. The Receiving Party shall use Confidential Information only for the Purpose, protect it with at least reasonable care, and disclose it only to its employees and professional advisors who need to know it for the Purpose and are bound by confidentiality obligations at least as protective as these.
+
+4. Term and Termination. This Agreement continues for three (3) years from the Effective Date. Either party may terminate this Agreement at any time on thirty (30) days' written notice to the other party.
+
+5. Survival. The Receiving Party's obligations under this Agreement survive for three (3) years after expiration or termination.
+
+6. No License. Nothing in this Agreement grants either party any license or other right in the other party's Confidential Information or intellectual property, except the limited right to use Confidential Information for the Purpose.
+
+7. Compelled Disclosure. The Receiving Party may disclose Confidential Information to the extent required by law, after giving the Disclosing Party prompt notice where legally permitted.
+
+8. Remedies. Each party acknowledges that a breach may cause irreparable harm and that the Disclosing Party may seek injunctive relief in addition to any other remedy.
+
+9. General. This Agreement is governed by the laws of the State of Delaware, is the entire agreement of the parties on its subject matter, and may be signed in counterparts.
+
+IN WITNESS WHEREOF, the parties have signed this Agreement as of the Effective Date.
+
+HARBOR LANE SOFTWARE, INC.      QUILL DATA LLC
+By: ____________________        By: ____________________

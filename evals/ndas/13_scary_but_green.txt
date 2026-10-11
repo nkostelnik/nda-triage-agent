@@ -1,0 +1,28 @@
+NONDISCLOSURE AGREEMENT
+
+[SYNTHETIC TEST DOCUMENT. Fictional parties. Not a real agreement.]
+
+This Nondisclosure Agreement (the "Agreement") is made as of June 15, 2026 (the "Effective Date") by Quarry Hill Genomics, Inc. ("Discloser") and Norland Data Services LLC ("Recipient"). Discloser will share sequencing pipeline information so that Recipient can propose data hosting services (the "Purpose").
+
+1. Confidential Information. "Confidential Information" means all non-public information that Discloser discloses to Recipient in connection with the Purpose, whether or not marked as confidential, including anything a reasonable person would understand to be confidential.
+
+2. Exclusions. Confidential Information does not include information that Recipient can demonstrate (a) is or becomes public through no fault of Recipient; (b) was known to Recipient before disclosure; (c) is received from a third party without a duty of confidentiality; or (d) is independently developed by Recipient without use of Confidential Information.
+
+3. Obligations. Recipient shall use Confidential Information only for the Purpose and protect it with at least reasonable care.
+
+4. Term. This Agreement continues for three (3) years from the Effective Date. Either party may terminate it on thirty (30) days' written notice.
+
+5. Survival. Recipient's obligations survive any expiration or termination of this Agreement and continue until the Confidential Information falls within one of the exclusions in Section 2.
+
+6. Feedback. Discloser may use without restriction any suggestions or feedback that Recipient provides about Discloser's products.
+
+7. Indemnification. Recipient shall indemnify and hold harmless Discloser from all losses arising out of Recipient's breach of this Agreement.
+
+8. Ownership; No License. All Confidential Information remains the property of Discloser. Nothing in this Agreement grants Recipient any license or other right in Confidential Information.
+
+9. Governing Law. This Agreement is governed by the laws of the State of Maryland.
+
+IN WITNESS WHEREOF, the parties have executed this Agreement as of the Effective Date.
+
+QUARRY HILL GENOMICS, INC.      NORLAND DATA SERVICES LLC
+By: ____________________        By: ____________________

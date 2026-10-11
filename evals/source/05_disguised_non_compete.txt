@@ -1,0 +1,28 @@
+MUTUAL NON-DISCLOSURE AGREEMENT
+
+[SYNTHETIC TEST DOCUMENT. Fictional parties. Not a real agreement.]
+
+This Mutual Non-Disclosure Agreement (the "Agreement") is made as of August 3, 2026 (the "Effective Date") between Aldergrove Robotics Inc. ("Aldergrove") and Pinecrest Automation Co. ("Pinecrest") in connection with discussions about a joint warehouse automation offering (the "Purpose").
+
+# Confidential Information
+"Confidential Information" means any non-public information disclosed by a party (the "Disclosing Party") to the other party (the "Receiving Party"), whether disclosed in writing, orally, or by inspection, and whether or not marked.
+
+# Exclusions
+Confidential Information does not include information that (a) is or becomes public through no fault of the Receiving Party; (b) was known to the Receiving Party before disclosure; (c) is received from a third party without restriction; or (d) is independently developed by the Receiving Party without use of the Disclosing Party's Confidential Information.
+
+# Use Restrictions
+The Receiving Party shall use Confidential Information solely for the Purpose. During the term of this Agreement and for two (2) years thereafter, the Receiving Party shall not design, develop, or commercialize any product that performs substantially the same functions as the Disclosing Party's products described in the Confidential Information.
+
+# Term
+This Agreement continues for three (3) years from the Effective Date. Either party may terminate it on thirty (30) days' written notice.
+
+# Survival
+The Receiving Party's confidentiality obligations survive for three (3) years after termination or expiration.
+
+# No License
+Nothing in this Agreement grants either party any license or other right in the other party's Confidential Information.
+
+# Governing Law
+This Agreement is governed by the laws of the State of Washington.
+
+IN WITNESS WHEREOF, the parties have executed this Agreement as of the Effective Date.

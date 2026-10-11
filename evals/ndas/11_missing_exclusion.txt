@@ -1,0 +1,24 @@
+CONFIDENTIAL DISCLOSURE AGREEMENT
+
+[SYNTHETIC TEST DOCUMENT. Fictional parties. Not a real agreement.]
+
+This Confidential Disclosure Agreement (the "Agreement") is made as of April 20, 2026 (the "Effective Date") between Ambermill Pharma Ltd. ("Ambermill") and Wexford Clinical Research Inc. ("Wexford"). Ambermill will disclose protocol information to Wexford so that Wexford can prepare a bid to run a clinical study (the "Purpose").
+
+1. Confidential Information. "Confidential Information" means all non-public information that Ambermill discloses to Wexford in connection with the Purpose, in any form, whether or not marked as confidential.
+
+2. Exceptions. The obligations in this Agreement do not apply to information that (a) is or becomes publicly available through no fault of Wexford; (b) was lawfully in Wexford's possession before disclosure by Ambermill; or (c) is lawfully obtained by Wexford from a third party without restriction.
+
+3. Obligations. Wexford shall use Confidential Information solely for the Purpose, protect it with reasonable care, and disclose it only to its employees who need to know it for the Purpose.
+
+4. Term. This Agreement continues for three (3) years from the Effective Date. Either party may terminate it on thirty (30) days' written notice.
+
+5. Survival. Wexford's obligations survive for five (5) years after termination or expiration.
+
+6. Return of Information. On Ambermill's request, Wexford shall return or destroy Confidential Information.
+
+7. Governing Law. This Agreement is governed by the laws of the State of New Jersey.
+
+IN WITNESS WHEREOF, the parties have executed this Agreement as of the Effective Date.
+
+AMBERMILL PHARMA LTD.           WEXFORD CLINICAL RESEARCH INC.
+By: ____________________        By: ____________________

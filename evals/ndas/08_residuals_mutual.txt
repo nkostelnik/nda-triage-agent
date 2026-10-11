@@ -1,0 +1,26 @@
+MUTUAL CONFIDENTIALITY AGREEMENT
+
+[SYNTHETIC TEST DOCUMENT. Fictional parties. Not a real agreement.]
+
+This Mutual Confidentiality Agreement (the "Agreement") is entered into as of March 16, 2026 (the "Effective Date") by Granite Peak Media, Inc. ("Granite Peak") and Halcyon Labs LLC ("Halcyon") to allow the parties to explore a content licensing relationship (the "Purpose").
+
+1. Confidential Information. "Confidential Information" means any non-public information disclosed by either party (the "Disclosing Party") to the other (the "Receiving Party"), whether or not marked, that a reasonable person would consider confidential.
+
+2. Exclusions. Confidential Information does not include information that (a) is or becomes public through no fault of the Receiving Party; (b) was known to the Receiving Party before disclosure; (c) is received from a third party without restriction; or (d) is independently developed by the Receiving Party without use of the Disclosing Party's Confidential Information.
+
+3. Obligations. The Receiving Party shall use Confidential Information only for the Purpose and protect it with reasonable care.
+
+4. Residuals. The Receiving Party may use Residuals for any purpose. "Residuals" means information in non-tangible form retained in the unaided memory of the Receiving Party's personnel who had access to Confidential Information, provided that (a) no person may intentionally memorize Confidential Information in order to use it later; (b) this section does not apply to the Disclosing Party's trade secrets; and (c) this section grants no license under any patent or copyright of the Disclosing Party.
+
+5. Term. This Agreement continues for two (2) years from the Effective Date. Either party may terminate it on thirty (30) days' written notice.
+
+6. Survival. Obligations survive for two (2) years after termination or expiration.
+
+7. No License. Except as stated in Section 4, nothing in this Agreement grants either party any license or other right in the other party's Confidential Information.
+
+8. Governing Law. This Agreement is governed by the laws of the State of Colorado.
+
+IN WITNESS WHEREOF, the parties have executed this Agreement as of the Effective Date.
+
+GRANITE PEAK MEDIA, INC.        HALCYON LABS LLC
+By: ____________________        By: ____________________

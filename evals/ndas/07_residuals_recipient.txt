@@ -1,0 +1,26 @@
+NONDISCLOSURE AGREEMENT
+
+[SYNTHETIC TEST DOCUMENT. Fictional parties. Not a real agreement.]
+
+This Nondisclosure Agreement (the "Agreement") is made as of October 1, 2026 (the "Effective Date") by Sorrento Payments, Inc. ("Discloser") and Tidewell Consulting LLC ("Recipient"). Discloser will share information about its fraud-detection platform so Recipient can scope a consulting engagement (the "Purpose").
+
+1. Confidential Information. "Confidential Information" means all non-public information that Discloser provides to Recipient in connection with the Purpose, whether or not marked as confidential.
+
+2. Exclusions. Confidential Information does not include information that (a) is or becomes publicly available through no fault of Recipient; (b) was known to Recipient before disclosure; (c) is received from a third party without restriction; or (d) is independently developed by Recipient without use of Confidential Information.
+
+3. Obligations. Recipient shall use Confidential Information only for the Purpose and protect it with reasonable care.
+
+4. Residual Knowledge. Notwithstanding anything in this Agreement, Recipient may use for any purpose the ideas, concepts, know-how, and techniques retained in the unaided memory of its personnel who had access to Confidential Information.
+
+5. Term. This Agreement continues for two (2) years from the Effective Date. Either party may terminate it on thirty (30) days' written notice.
+
+6. Survival. Recipient's obligations survive for three (3) years after termination or expiration.
+
+7. No License. Nothing in this Agreement grants Recipient any license or other right in Discloser's Confidential Information or intellectual property.
+
+8. Governing Law. This Agreement is governed by the laws of the State of Illinois.
+
+IN WITNESS WHEREOF, the parties have executed this Agreement as of the Effective Date.
+
+SORRENTO PAYMENTS, INC.         TIDEWELL CONSULTING LLC
+By: ____________________        By: ____________________

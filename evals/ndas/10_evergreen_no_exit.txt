@@ -1,0 +1,24 @@
+MUTUAL NONDISCLOSURE AGREEMENT
+
+[SYNTHETIC TEST DOCUMENT. Fictional parties. Not a real agreement.]
+
+This Mutual Nondisclosure Agreement (the "Agreement") is entered into as of January 12, 2026 (the "Effective Date") by Sablewood Energy LLC ("Sablewood") and Thornbury Grid Services, Inc. ("Thornbury") regarding a possible grid storage project (the "Purpose").
+
+1. Confidential Information. "Confidential Information" means any non-public information disclosed by either party (the "Disclosing Party") to the other party (the "Receiving Party") in connection with the Purpose, whether or not marked.
+
+2. Exclusions. Confidential Information does not include information that (a) is or becomes public through no fault of the Receiving Party; (b) was known to the Receiving Party before disclosure; (c) is received from a third party without restriction; or (d) is independently developed by the Receiving Party without use of the Disclosing Party's Confidential Information.
+
+3. Obligations. The Receiving Party shall use Confidential Information only for the Purpose and protect it with reasonable care.
+
+4. Duration. This Agreement takes effect on the Effective Date and remains in effect until the parties sign a definitive agreement for the Purpose.
+
+5. Survival. The Receiving Party's obligations continue for so long as the information remains Confidential Information under this Agreement.
+
+6. No License. Nothing in this Agreement grants either party any license or other right in the other party's Confidential Information.
+
+7. Governing Law. This Agreement is governed by the laws of the State of Oklahoma.
+
+IN WITNESS WHEREOF, the parties have executed this Agreement as of the Effective Date.
+
+SABLEWOOD ENERGY LLC            THORNBURY GRID SERVICES, INC.
+By: ____________________        By: ____________________

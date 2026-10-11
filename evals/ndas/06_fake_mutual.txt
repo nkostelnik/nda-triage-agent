@@ -1,0 +1,26 @@
+MUTUAL NONDISCLOSURE AGREEMENT
+
+[SYNTHETIC TEST DOCUMENT. Fictional parties. Not a real agreement.]
+
+This Mutual Nondisclosure Agreement (the "Agreement") is entered into as of September 8, 2026 (the "Effective Date") between Lumenfield Technologies, Inc. (the "Company") and Ostrander Media Group LLC ("Ostrander"), each a "party," in connection with a potential co-marketing arrangement (the "Purpose").
+
+1. Mutual Confidentiality. The parties expect to exchange information with each other in connection with the Purpose, and each party agrees to protect the other party's Confidential Information as set out below.
+
+2. Confidential Information. "Confidential Information" means (a) all non-public information disclosed by the Company to Ostrander, whether or not marked or identified as confidential; and (b) information disclosed by Ostrander to the Company, but only if it is marked "Confidential" at the time of disclosure and, if disclosed orally, confirmed as confidential in writing within ten (10) days.
+
+3. Exclusions. Confidential Information does not include information that the receiving party can demonstrate (a) is or becomes public through no fault of the receiving party; (b) was known to the receiving party before disclosure; (c) is received from a third party without restriction; or (d) is independently developed without use of the other party's Confidential Information.
+
+4. Obligations. Each party shall use the other party's Confidential Information only for the Purpose and shall protect it with reasonable care.
+
+5. Term. This Agreement continues for three (3) years from the Effective Date. Either party may terminate it on thirty (30) days' written notice.
+
+6. Survival. Confidentiality obligations survive for three (3) years after termination or expiration.
+
+7. No License. Nothing in this Agreement grants either party any license or other right in the other party's Confidential Information.
+
+8. Governing Law. This Agreement is governed by the laws of the State of California.
+
+IN WITNESS WHEREOF, the parties have executed this Agreement as of the Effective Date.
+
+LUMENFIELD TECHNOLOGIES, INC.   OSTRANDER MEDIA GROUP LLC
+By: ____________________        By: ____________________

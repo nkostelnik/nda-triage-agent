@@ -1,0 +1,31 @@
+MUTUAL NONDISCLOSURE AGREEMENT
+
+[SYNTHETIC TEST DOCUMENT. Fictional parties. Not a real agreement.]
+
+This Mutual Nondisclosure Agreement (the "Agreement") is entered into as of July 7, 2026 (the "Effective Date") by Cobalt Ridge Partners LP ("Cobalt Ridge") and Meridian Health Software, Inc. ("Meridian") to permit the parties to evaluate a potential investment by Cobalt Ridge in Meridian (the "Purpose").
+
+1. Definitions. "Confidential Information" means all non-public business, technical, and financial information disclosed by one party (the "Disclosing Party") to the other (the "Receiving Party"), whether or not marked as confidential.
+
+2. Exclusions. Confidential Information does not include information that (a) is or becomes generally available to the public other than through the Receiving Party's breach; (b) was in the Receiving Party's possession before disclosure without restriction; (c) is obtained from a third party lawfully entitled to disclose it; or (d) is independently developed without reference to the Disclosing Party's Confidential Information.
+
+3. Obligations. The Receiving Party shall hold Confidential Information in confidence, use it only for the Purpose, and protect it with reasonable care.
+
+4. Term. This Agreement has a term of two (2) years from the Effective Date. Either party may terminate it upon thirty (30) days' written notice.
+
+5. Survival. Obligations with respect to Confidential Information survive for two (2) years after termination or expiration.
+
+6. No License. No license under any patent, copyright, or other intellectual property right is granted by this Agreement.
+
+7. No Obligation. Neither party is obligated to proceed with any transaction.
+
+8. Miscellaneous.
+8.1 Governing Law. This Agreement is governed by the laws of the State of New York.
+8.2 Assignment. Neither party may assign this Agreement without the other party's consent.
+8.3 Notices. Notices must be in writing and delivered to the addresses on the signature page.
+8.4 Personnel. Each party is solely responsible for its own personnel. For one (1) year after the Effective Date, neither party will hire or otherwise engage any employee of the other party who was involved in the Purpose.
+8.5 Entire Agreement. This Agreement is the entire agreement of the parties on its subject matter.
+
+IN WITNESS WHEREOF, the parties have executed this Agreement as of the Effective Date.
+
+COBALT RIDGE PARTNERS LP        MERIDIAN HEALTH SOFTWARE, INC.
+By: ____________________        By: ____________________
